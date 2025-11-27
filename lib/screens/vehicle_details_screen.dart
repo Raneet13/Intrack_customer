@@ -67,8 +67,8 @@ class VehicleDetailsScreen extends StatelessWidget {
                     _buildInfoRow('Year', vehicle.year.toString()),
                     if (vehicle.mileage != null)
                       _buildInfoRow('Mileage', '${vehicle.mileage} KMs'),
-                    if (vehicle.lastService != null)
-                      _buildInfoRow('Last Service', vehicle.lastService!),
+                    if (vehicle.lastLocation != null)
+                      _buildInfoRow('Last Service', vehicle.lastLocation!),
                   ],
                 ),
               ),
@@ -89,7 +89,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    _buildInfoRow('Driver', vehicle.driver),
+                    _buildInfoRow('Driver', vehicle.driverName),
                     _buildInfoRow('Phone', vehicle.driverPhone),
                   ],
                 ),

@@ -1,44 +1,29 @@
-class Subscription {
-  final String planName;
+class SubscriptionPlan {
+  final String id;
+  final String name;
   final int vehicleCount;
-  final int price;
-  final String billingCycle;
-  final String status;
-  final DateTime expiryDate;
+  final double monthlyPrice;
+  final double yearlyPrice;
   final List<String> features;
   final bool isPopular;
 
-  Subscription({
-    required this.planName,
+  SubscriptionPlan({
+    required this.id,
+    required this.name,
     required this.vehicleCount,
-    required this.price,
-    required this.billingCycle,
-    required this.status,
-    required this.expiryDate,
+    required this.monthlyPrice,
+    required this.yearlyPrice,
     required this.features,
     this.isPopular = false,
   });
 
-  int get daysUntilExpiry {
-    return expiryDate.difference(DateTime.now()).inDays;
-  }
-
-  bool get isExpiring {
-    return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
-  }
-
-  bool get isExpired {
-    return daysUntilExpiry < 0;
-  }
-
-  factory Subscription.fromJson(Map<String, dynamic> json) {
-    return Subscription(
-      planName: json['planName'],
+  factory SubscriptionPlan.fromJson(Map<String, dynamic> json) {
+    return SubscriptionPlan(
+      id: json['id'],
+      name: json['name'],
       vehicleCount: json['vehicleCount'],
-      price: json['price'],
-      billingCycle: json['billingCycle'],
-      status: json['status'],
-      expiryDate: DateTime.parse(json['expiryDate']),
+      monthlyPrice: json['monthlyPrice'].toDouble(),
+      yearlyPrice: json['yearlyPrice'].toDouble(),
       features: List<String>.from(json['features']),
       isPopular: json['isPopular'] ?? false,
     );
@@ -46,92 +31,69 @@ class Subscription {
 
   Map<String, dynamic> toJson() {
     return {
-      'planName': planName,
+      'id': id,
+      'name': name,
       'vehicleCount': vehicleCount,
-      'price': price,
-      'billingCycle': billingCycle,
-      'status': status,
-      'expiryDate': expiryDate.toIso8601String(),
+      'monthlyPrice': monthlyPrice,
+      'yearlyPrice': yearlyPrice,
       'features': features,
       'isPopular': isPopular,
     };
   }
 }
 
-class SubscriptionPlan {
-  final String name;
+class UserSubscription {
+  final String id;
+  final String planId;
+  final String planName;
   final int vehicleCount;
-  final int price;
-  final List<String> features;
-  final bool isPopular;
+  final DateTime startDate;
+  final DateTime endDate;
+  final bool isActive;
+  final String billingCycle;
+  final double amount;
 
-  SubscriptionPlan({
-    required this.name,
+  UserSubscription({
+    required this.id,
+    required this.planId,
+    required this.planName,
     required this.vehicleCount,
-    required this.price,
-    required this.features,
-    this.isPopular = false,
+    required this.startDate,
+    required this.endDate,
+    required this.isActive,
+    required this.billingCycle,
+    required this.amount,
   });
 
-  static List<SubscriptionPlan> getAllPlans() {
-    return [
-      SubscriptionPlan(
-        name: 'Starter',
-        vehicleCount: 3,
-        price: 999,
-        features: [
-          'Track up to 3 vehicles',
-          'Real-time GPS tracking',
-          'Basic reports',
-          'Email support',
-        ],
-      ),
-      SubscriptionPlan(
-        name: 'Business',
-        vehicleCount: 10,
-        price: 2499,
-        isPopular: true,
-        features: [
-          'Track up to 10 vehicles',
-          'Real-time GPS tracking',
-          'Advanced reports',
-          'Driver management',
-          'Email & Chat support',
-          'Route optimization',
-        ],
-      ),
-      SubscriptionPlan(
-        name: 'Professional',
-        vehicleCount: 25,
-        price: 4999,
-        features: [
-          'Track up to 25 vehicles',
-          'Real-time GPS tracking',
-          'Comprehensive reports',
-          'Driver management',
-          'Priority support',
-          'Route optimization',
-          'Fuel management',
-          'Maintenance alerts',
-        ],
-      ),
-      SubscriptionPlan(
-        name: 'Enterprise',
-        vehicleCount: 100,
-        price: 9999,
-        features: [
-          'Track up to 100 vehicles',
-          'Real-time GPS tracking',
-          'Enterprise reports',
-          'Advanced driver management',
-          '24/7 Priority support',
-          'Route optimization',
-          'Fuel management',
-          'Maintenance alerts',
-          'API access',
-          'Custom integrations',
-        ],
-      ),
-    ];
+  bool get isExpired => endDate.isBefore(DateTime.now());
+  
+  int get daysRemaining => isActive ? endDate.difference(DateTime.now()).inDays : 0;
+
+  factory UserSubscription.fromJson(Map<String, dynamic> json) {
+    return UserSubscription(
+      id: json['id'],
+      planId: json['planId'],
+      planName: json['planName'],
+      vehicleCount: json['vehicleCount'],
+      startDate: DateTime.parse(json['startDate']),
+      endDate: DateTime.parse(json['endDate']),
+      isActive: json['isActive'],
+      billingCycle: json['billingCycle'],
+      amount: json['amount'].toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'planId': planId,
+      'planName': planName,
+      'vehicleCount': vehicleCount,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'isActive': isActive,
+      'billingCycle': billingCycle,
+      'amount': amount,
+    };
   }
 }

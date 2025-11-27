@@ -1,361 +1,359 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/edit_driver_screen.dart';
+import 'package:intrack_customer/screens/add_driver_screen.dart';
+import 'package:intrack_customer/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../providers/driver_provider.dart';
+import '../theme/app_theme.dart';
 import '../models/driver.dart';
-import '../data/mock_data.dart';
-import '../theme/app_colors.dart';
-import '../widgets/mobile_header.dart';
-import '../widgets/status_badge.dart';
-import 'add_driver_screen.dart';
+import 'package:intl/intl.dart';
 
-class DriversScreen extends StatefulWidget {
-  const DriversScreen({Key? key}) : super(key: key);
-
-  @override
-  State<DriversScreen> createState() => _DriversScreenState();
-}
-
-class _DriversScreenState extends State<DriversScreen> {
-  List<Driver> drivers = [];
-  String searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    drivers = MockData.getDrivers();
-  }
-
-  List<Driver> get filteredDrivers {
-    return drivers.where((driver) {
-      return driver.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          driver.phone.contains(searchQuery) ||
-          driver.assignedVehicle.toLowerCase().contains(searchQuery.toLowerCase());
-    }).toList();
-  }
+class DriversScreen extends StatelessWidget {
+  const DriversScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final activeCount = drivers.where((d) => d.status == DriverStatus.active).length;
-
     return Scaffold(
-      appBar: MobileHeader(
-        title: 'Drivers',
-        canGoBack: true,
-        subtitle: '${filteredDrivers.length} drivers',
-        rightAction: Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddDriverScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.add, size: 18),
-            label: const Text('Add'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      appBar: AppBar(
+        title: const Text('Drivers'),
+        actions: [
+           Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ElevatedButton.icon(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddDriverScreen()));
+              },
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Add Driver'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                textStyle: const TextStyle(fontSize: 14),
+              ),
             ),
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Consumer<DriverProvider>(
+          builder: (context, provider, _) {
+            final expiringLicenses = provider.getDriversWithExpiringLicenses();
+            
+            return Column(
+              children: [
+                // Warning Banner for Expiring Licenses
+                if (expiringLicenses.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.warning.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.warning.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.warning_amber,
+                          color: AppTheme.warning,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '${expiringLicenses.length} driver license(s) expiring soon',
+                            style: AppTheme.bodyMedium.copyWith(
+                              color: AppTheme.warning,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Drivers List
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: provider.drivers.length,
+                  itemBuilder: (context, index) {
+                    return _buildDriverCard(context, provider.drivers[index]);
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search drivers...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text('Add Driver feature coming soon')),
+      //     );
+      //   },
+      //   icon: const Icon(Icons.person_add),
+      //   label: const Text('Add Driver'),
+      // ),
+    );
+  }
+
+  Widget _buildDriverCard(BuildContext context, Driver driver) {
+    final statusColor = _getStatusColor(driver.status);
+    final isLicenseExpiring = driver.isLicenseExpiring;
+    final isLicenseExpired = driver.isLicenseExpired;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: AppTheme.cardDecoration,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+                    child: Text(
+                      driver.name.substring(0, 1).toUpperCase(),
+                      style: AppTheme.headingMedium.copyWith(
+                        color: AppTheme.primaryBlue,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          driver.name,
+                          style: AppTheme.bodyLarge.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          driver.phone,
+                          style: AppTheme.bodySmall.copyWith(
+                            color: AppTheme.textGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      driver.status.toUpperCase(),
+                      style: AppTheme.caption.copyWith(
+                        color: statusColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const Divider(height: 24),
+              
+              // License Info
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'License Number',
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.textGray,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          driver.licenseNumber,
+                          style: AppTheme.bodySmall.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // const SizedBox(width: 16),
+                  // Expanded(
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           Text(
+                  //             'Expiry Date',
+                  //             style: AppTheme.caption.copyWith(
+                  //               color: AppTheme.textGray,
+                  //             ),
+                  //           ),
+                  //           if (isLicenseExpiring || isLicenseExpired)
+                  //             Padding(
+                  //               padding: const EdgeInsets.only(left: 4),
+                  //               child: Icon(
+                  //                 Icons.warning_amber,
+                  //                 size: 12,
+                  //                 color: isLicenseExpired 
+                  //                     ? AppTheme.error 
+                  //                     : AppTheme.warning,
+                  //               ),
+                  //             ),
+                  //         ],
+                  //       ),
+                  //       const SizedBox(height: 4),
+                  //       Text(
+                  //         DateFormat('dd MMM yyyy').format(driver.licenseExpiry),
+                  //         style: AppTheme.bodySmall.copyWith(
+                  //           fontWeight: FontWeight.w600,
+                  //           color: isLicenseExpired 
+                  //               ? AppTheme.error 
+                  //               : isLicenseExpiring 
+                  //                   ? AppTheme.warning 
+                  //                   : null,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Stats Row
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatChip(
+                        Icons.call,
+                        'Call',
+                        AppTheme.bgLight,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddDriverScreen(editingDriver: driver,)));
+                        },
+                        child: _buildStatChip(
+                          Icons.edit_note_outlined,
+                          'Edit',
+                          AppTheme.bgLight,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          
+                          showDeleteDialog(context);
+                        },
+                        child: _buildStatChip(
+                          Icons.delete_outline,
+                          'Delete',
+                          AppTheme.bgLight,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-            ),
-          ),
-
-          // Stats
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            activeCount.toString(),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.success,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Active Drivers',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
+              
+              if (driver.currentVehicleName != null) ...[
+                const Divider(height: 24),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.local_shipping,
+                      size: 16,
+                      color: AppTheme.textGray,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Assigned: ${driver.currentVehicleName}',
+                      style: AppTheme.bodySmall.copyWith(
+                        color: AppTheme.textGray,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            drivers.length.toString(),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Total Drivers',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ],
-            ),
+            ],
           ),
-          const SizedBox(height: 16),
-
-          // Driver List
-          Expanded(
-            child: filteredDrivers.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filteredDrivers.length,
-                    itemBuilder: (context, index) {
-                      return _buildDriverCard(filteredDrivers[index]);
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDriverCard(Driver driver) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
-                  child: Text(
-                    driver.getInitials(),
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            driver.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          StatusBadge.status(driver.status.toString()),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone,
-                            size: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            driver.phone,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.email,
-                            size: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              driver.email,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.directions_car,
-                            size: 14,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            driver.assignedVehicle,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (driver.rating != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                size: 14,
-                                color: AppColors.warning,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${driver.rating} • ${driver.totalTrips} trips • ${driver.totalKms} KMs',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          'License: ${driver.licenseNumber} (Exp: ${driver.licenseExpiry})',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Call driver
-                    },
-                    icon: const Icon(Icons.phone, size: 16),
-                    label: const Text('Call'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Edit driver
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>  EditDriverScreen(driver: driver,),
-                        ),
-                      );
-                      
-                    },
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: const Text('Edit'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                OutlinedButton(
-                  onPressed: () {
-                    _showDeleteDialog(driver);
-                  },
-                  child: const Icon(Icons.delete, size: 16),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );
   }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.people_rounded,
-            size: 64,
-            color: AppColors.textMuted,
+void showDeleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        // backgroundColor: AppTheme.accentOrange.withOpacity(0.1),
+        title: const Text("Confirm Delete"),
+        content: const Text("Are you sure you want to delete the Driver?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // close dialog
+            },
+            child: const Text("No"),
           ),
-          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // close first dialog
+              
+            },
+            child: const Text("Yes"),
+          ),
+        ],
+      );
+    },
+  );
+}
+  Widget _buildStatChip(IconData icon, String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+
+        children: [
+          Icon(icon, size: 14, color: AppTheme.textDark),
+          const SizedBox(width: 4),
           Text(
-            'No drivers found',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
+            label,
+            style: AppTheme.caption.copyWith(
+              color: AppTheme.textDark,
             ),
           ),
         ],
@@ -363,34 +361,16 @@ class _DriversScreenState extends State<DriversScreen> {
     );
   }
 
-  void _showDeleteDialog(Driver driver) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Driver'),
-        content: Text('Are you sure you want to delete ${driver.name}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                drivers.removeWhere((d) => d.id == driver.id);
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${driver.name} deleted')),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return AppTheme.success;
+      case 'on leave':
+        return AppTheme.warning;
+      case 'inactive':
+        return AppTheme.error;
+      default:
+        return AppTheme.textGray;
+    }
   }
 }

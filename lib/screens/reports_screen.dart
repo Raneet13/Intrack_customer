@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intrack_customer/screens/report_vehicle_details.dart';
 import '../theme/app_colors.dart';
 import '../widgets/mobile_header.dart';
 import '../widgets/status_badge.dart';
@@ -116,193 +117,193 @@ class _ReportsScreenState extends State<ReportsScreen> {
         subtitle: 'KM run and device status',
         canGoBack: false,
         action: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: _generateReport,
-              icon: const Icon(Icons.download, size: 16),
-              label: const Text('Export'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                textStyle: const TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 8.0),
+          //   child: ElevatedButton.icon(
+          //     onPressed: _generateReport,
+          //     icon: const Icon(Icons.download, size: 16),
+          //     label: const Text('Export'),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: AppColors.primary,
+          //       foregroundColor: Colors.white,
+          //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          //       textStyle: const TextStyle(fontSize: 14),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(4.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Report Filters Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.filter_list, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Report Filters',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Vehicle',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: selectedVehicle,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: 'all',
-                              child: Text('All Vehicles'),
-                            ),
-                            ...vehicleReportData.map((vehicle) {
-                              return DropdownMenuItem(
-                                value: vehicle['registration'] as String,
-                                child: Text('${vehicle['registration']} - ${vehicle['model']}'),
-                              );
-                            }).toList(),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              selectedVehicle = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // Card(
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(16.0),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         const Row(
+            //           children: [
+            //             Icon(Icons.filter_list, size: 20),
+            //             SizedBox(width: 8),
+            //             Text(
+            //               'Report Filters',
+            //               style: TextStyle(
+            //                 fontSize: 16,
+            //                 fontWeight: FontWeight.w600,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //         const SizedBox(height: 16),
+            //         Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             const Text(
+            //               'Vehicle',
+            //               style: TextStyle(
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w500,
+            //               ),
+            //             ),
+            //             const SizedBox(height: 8),
+            //             DropdownButtonFormField<String>(
+            //               value: selectedVehicle,
+            //               decoration: InputDecoration(
+            //                 border: OutlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(8),
+            //                 ),
+            //                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            //               ),
+            //               items: [
+            //                 const DropdownMenuItem(
+            //                   value: 'all',
+            //                   child: Text('All Vehicles'),
+            //                 ),
+            //                 ...vehicleReportData.map((vehicle) {
+            //                   return DropdownMenuItem(
+            //                     value: vehicle['registration'] as String,
+            //                     child: Text('${vehicle['registration']} - ${vehicle['model']}'),
+            //                   );
+            //                 }).toList(),
+            //               ],
+            //               onChanged: (value) {
+            //                 setState(() {
+            //                   selectedVehicle = value!;
+            //                 });
+            //               },
+            //             ),
+            //           ],
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
-            const SizedBox(height: 16),
+            // const SizedBox(height: 16),
 
-            // Fleet Summary Cards
-            Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.wifi, size: 32, color: AppColors.success),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Online Devices',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$onlineVehicles',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Active connections',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.success,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.wifi_off, size: 32, color: AppColors.error),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Offline Devices',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$offlineVehicles',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Need attention',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.error,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // // Fleet Summary Cards
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: Card(
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(16.0),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.wifi, size: 32, color: AppColors.success),
+            //               const SizedBox(width: 12),
+            //               Expanded(
+            //                 child: Column(
+            //                   crossAxisAlignment: CrossAxisAlignment.start,
+            //                   children: [
+            //                     Text(
+            //                       'Online Devices',
+            //                       style: TextStyle(
+            //                         fontSize: 12,
+            //                         color: AppColors.textSecondary,
+            //                       ),
+            //                     ),
+            //                     const SizedBox(height: 4),
+            //                     Text(
+            //                       '$onlineVehicles',
+            //                       style: const TextStyle(
+            //                         fontSize: 24,
+            //                         fontWeight: FontWeight.bold,
+            //                       ),
+            //                     ),
+            //                     const SizedBox(height: 2),
+            //                     Text(
+            //                       'Active connections',
+            //                       style: TextStyle(
+            //                         fontSize: 11,
+            //                         color: AppColors.success,
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(width: 12),
+            //     Expanded(
+            //       child: Card(
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(16.0),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.wifi_off, size: 32, color: AppColors.error),
+            //               const SizedBox(width: 12),
+            //               Expanded(
+            //                 child: Column(
+            //                   crossAxisAlignment: CrossAxisAlignment.start,
+            //                   children: [
+            //                     Text(
+            //                       'Offline Devices',
+            //                       style: TextStyle(
+            //                         fontSize: 12,
+            //                         color: AppColors.textSecondary,
+            //                       ),
+            //                     ),
+            //                     const SizedBox(height: 4),
+            //                     Text(
+            //                       '$offlineVehicles',
+            //                       style: const TextStyle(
+            //                         fontSize: 24,
+            //                         fontWeight: FontWeight.bold,
+            //                       ),
+            //                     ),
+            //                     const SizedBox(height: 2),
+            //                     Text(
+            //                       'Need attention',
+            //                       style: TextStyle(
+            //                         fontSize: 11,
+            //                         color: AppColors.error,
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
 
-            const SizedBox(height: 16),
+            // const SizedBox(height: 16),
 
             // Vehicle-wise Report Card
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -383,37 +384,58 @@ class _ReportsScreenState extends State<ReportsScreen> {
           const SizedBox(height: 16),
 
           // KM Data Grid
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Row(
             children: [
-              _buildKmDataCard(
-                label: 'Opening KMs',
-                value: _formatNumber(vehicle['openingKms'] as int),
-                color: Colors.indigo,
-              ),
-              _buildKmDataCard(
-                label: 'Current KMs',
-                value: _formatNumber(vehicle['currentKms'] as int),
-                color: Colors.blue,
-              ),
-              _buildKmDataCard(
-                label: 'KMs Covered',
-                value: _formatNumber(vehicle['kmsCovered'] as int),
-                color: Colors.green,
-              ),
-              _buildKmDataCard(
-                label: 'Monthly KM',
-                value: _formatNumber(vehicle['monthlyKm'] as int),
-                color: Colors.orange,
-              ),
-              _buildKmDataCard(
-                label: 'Daily KM',
-                value: '${vehicle['dailyKm']}',
-                color: Colors.purple,
+               Expanded(
+                 child: _buildKmDataCard(
+                  label: 'Opening KMs',
+                  value: _formatNumber(vehicle['openingKms'] as int),
+                  color: Colors.indigo,
+                               ),
+               ),
+               SizedBox( width: 8,),
+              Expanded(
+                child: _buildKmDataCard(
+                  label: 'Current KMs',
+                  value: _formatNumber(vehicle['currentKms'] as int),
+                  color: Colors.blue,
+                ),
               ),
             ],
           ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildKmDataCard(
+                  label: 'KMs Covered',
+                  value: _formatNumber(vehicle['kmsCovered'] as int),
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox( width: 8,),
+              Expanded(
+                child: _buildKmDataCard(
+                  label: 'Today KM',
+                  value: _formatNumber(vehicle['monthlyKm'] as int),
+                  color: Colors.orange,
+                ),
+              ),
+            ],
+          ),
+          // Wrap(
+          //   spacing: 8,
+          //   runSpacing: 8,
+          //   children: [
+             
+              
+          //     _buildKmDataCard(
+          //       label: 'Daily KM',
+          //       value: '${vehicle['dailyKm']}',
+          //       color: Colors.purple,
+          //     ),
+          //   ],
+          // ),
 
           const SizedBox(height: 16),
 
@@ -436,6 +458,38 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          InkWell(
+            onTap: () {
+           Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>VehicleTrackingScreen()),
+            );
+            },
+            child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xffFAFAFF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.location_on_outlined,color: Colors.grey,size: 16,),
+                    const SizedBox(width: 8),
+                    Text("View Tracking Details",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
+                        )),
+                  ],
+                ),
+                ),
+          )
         ],
       ),
     );

@@ -1,237 +1,367 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/vehicle_details_screen.dart';
-import '../theme/app_colors.dart';
-import '../data/mock_data.dart';
-import '../models/activity.dart';
-import '../widgets/status_badge.dart';
-import 'subscription_screen.dart';
-import 'live_tracking_screen.dart';
+import 'package:intrack_customer/screens/main_screen.dart';
+import 'package:intrack_customer/screens/report_vehicle_details.dart';
+import 'package:provider/provider.dart';
+import '../providers/vehicle_provider.dart';
+import '../providers/driver_provider.dart';
+import '../theme/app_theme.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final stats = MockData.getFleetStats();
-    final activities = MockData.getRecentActivities();
-
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // App Header
-                _buildAppHeader(),
-                const SizedBox(height: 16),
-
-                // Subscription Reminder
-                _buildSubscriptionReminder(context),
-                const SizedBox(height: 16),
-
-                // Fleet Overview
-                _buildFleetOverview(stats),
-                const SizedBox(height: 16),
-
-                // Quick Actions
-                _buildQuickActions(context),
-                const SizedBox(height: 16),
-
-                // Recent Activities
-                _buildRecentActivities(context,activities),
+        child: CustomScrollView(
+          slivers: [
+            // App Bar
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: Image.asset("assets/intrack_header.png",fit: BoxFit.cover, height: 25,),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_outlined),
+                  color: AppTheme.textDark,
+                  onPressed: () {},
+                ),
+                const SizedBox(width: 8),
               ],
             ),
-          ),
+
+            // Content
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // Stats Overview
+                  _buildStatsSection(context),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Quick Actions
+                  _buildQuickActions(context),
+                  
+                  // const SizedBox(height: 24),
+                  
+                  // Today's Summary
+                  // _buildTodaySummary(context),
+                  
+                  // const SizedBox(height: 24),
+                  
+                  // Recent Activity
+                  _buildRecentActivity(context),
+                  
+                  const SizedBox(height: 80),
+                ]),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildAppHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
+  Widget _buildStatsSection(BuildContext context) {
+    return Consumer2<VehicleProvider, DriverProvider>(
+      builder: (context, vehicleProvider, driverProvider, _) {
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'IN-Track',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+              'Fleet Overview',
+              style: AppTheme.headingSmall,
             ),
-            Text(
-              'Fleet Management',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              'Good Morning',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            Text(
-              'Transport Solutions',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSubscriptionReminder(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
-        border: Border.all(color: const Color(0xFFFED7AA)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SubscriptionScreen()),
-            );
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              children: [
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFEDD5),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.access_time_rounded,
-                    color: AppColors.warning,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Subscription Expiring Soon',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF9A3412),
+            const SizedBox(height: 16),
+            
+            // Main KM Card
+            Container(
+              decoration: AppTheme.gradientCardDecoration,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.speed,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(width: 12),
                       Text(
-                        'Your Business plan expires in 7 days. Renew to continue tracking all vehicles.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFFC2410C),
+                        'Today\'s Distance',
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: Colors.white.withOpacity(0.9),
                         ),
                       ),
                     ],
                   ),
-                ),
-                Container(
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFEDD5),
-                    borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${vehicleProvider.getTodayTotalKm().toStringAsFixed(1)} KM',
+                    style: AppTheme.headingLarge.copyWith(
+                      fontSize: 36,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.warning,
-                    size: 16,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.trending_up,
+                        color: Colors.greenAccent,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '12% from yesterday',
+                        style: AppTheme.bodySmall.copyWith(
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Stats Grid
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Vehicles',
+                    vehicleProvider.totalVehicles.toString(),
+                    Icons.local_shipping,
+                    AppTheme.primaryBlue,
+                    '${vehicleProvider.activeVehicles} Active',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Drivers',
+                    driverProvider.totalDrivers.toString(),
+                    Icons.people,
+                    AppTheme.accentGreen,
+                    '${driverProvider.activeDrivers} Active',
                   ),
                 ),
               ],
             ),
+            
+            const SizedBox(height: 12),
+            
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Active Now',
+                    vehicleProvider.activeVehicles.toString(),
+                    Icons.gps_fixed,
+                    AppTheme.success,
+                    'Moving',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Idle',
+                    vehicleProvider.idleVehicles.toString(),
+                    Icons.pause_circle,
+                    AppTheme.warning,
+                    'Stopped',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    String subtitle,
+  ) {
+    return Container(
+      decoration: AppTheme.cardDecoration,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(icon, color: color, size: 24),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  subtitle,
+                  style: AppTheme.caption.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: AppTheme.headingLarge.copyWith(
+              fontSize: 28,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: AppTheme.bodySmall.copyWith(
+              color: AppTheme.textGray,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildFleetOverview(Map<String, int> stats) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: AppTheme.headingSmall,
+        ),
+        const SizedBox(height: 16),
+        Row(
           children: [
-            const Text(
-              'Fleet Overview',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: _buildActionButton(
+                'Live Tracking',
+                Icons.location_on,
+                AppTheme.primaryBlue,
+                () {
+                  // Navigate to live tracking
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) =>  MainScreen(currentIndex: 1),
+                    ),
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatItem(
-                    icon: Icons.directions_car_rounded,
-                    iconColor: AppColors.primary,
-                    value: stats['totalVehicles'].toString(),
-                    label: 'Total Vehicles',
-                  ),
-                ),
-                Expanded(
-                  child: _buildStatItem(
-                    icon: Icons.circle,
-                    iconColor: AppColors.success,
-                    value: stats['activeVehicles'].toString(),
-                    label: 'Active Now',
-                    valueColor: AppColors.success,
-                  ),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                'Reports',
+                Icons.assessment,
+                AppTheme.accentPurple,
+                () {
+                  // Navigate to reports
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) =>  MainScreen(currentIndex: 3),
+                    ),
+                  );
+                },
+              ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatItem(
-                    icon: Icons.route_rounded,
-                    iconColor: AppColors.info,
-                    value: stats['totalKms']!.toString(),
-                    label: 'Total KMs',
-                  ),
+           
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: _buildActionButton(
+        //         'Add Driver',
+        //         Icons.person_add,
+        //         AppTheme.accentOrange,
+        //         () {
+        //           // Navigate to add driver
+        //         },
+        //       ),
+        //     ),
+        //     const SizedBox(width: 12),
+        //      Expanded(
+        //       child: _buildActionButton(
+        //         'Add Vehicle',
+        //         Icons.add_circle,
+        //         AppTheme.accentGreen,
+        //         () {
+        //           // Navigate to add vehicle
+        //         },
+        //       ),
+        //     ),
+        //   ],
+        // ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: color.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.bodyMedium.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
                 ),
-                Expanded(
-                  child: _buildStatItem(
-                    icon: Icons.warning_rounded,
-                    iconColor: AppColors.warning,
-                    value: stats['alerts'].toString(),
-                    label: 'Active Alerts',
-                    valueColor: AppColors.warning,
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -239,261 +369,195 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem({
-    required IconData icon,
-    required Color iconColor,
-    required String value,
-    required String label,
-    Color? valueColor,
-  }) {
-    return Column(
+  Widget _buildTodaySummary(BuildContext context) {
+    return Container(
+      decoration: AppTheme.cardDecoration,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Today\'s Summary',
+                style: AppTheme.headingSmall,
+              ),
+              Text(
+                'Nov 20, 2025',
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.textGray,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildSummaryRow(
+            'Total Trips',
+            '24',
+            Icons.route,
+            AppTheme.primaryBlue,
+          ),
+          const Divider(height: 24),
+          _buildSummaryRow(
+            'Average Speed',
+            '52 km/h',
+            Icons.speed,
+            AppTheme.accentGreen,
+          ),
+          const Divider(height: 24),
+          _buildSummaryRow(
+            'Fuel Consumed',
+            '145 L',
+            Icons.local_gas_station,
+            AppTheme.accentOrange,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Row(
       children: [
         Container(
-          height: 40,
-          width: 40,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: iconColor, size: 20),
+          child: Icon(icon, color: color, size: 20),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: AppTheme.bodyMedium,
+          ),
+        ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: valueColor ?? AppColors.textPrimary,
+          style: AppTheme.bodyLarge.copyWith(
+            fontWeight: FontWeight.w600,
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildRecentActivity(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Quick Actions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+            Text(
+              'Recent Activity',
+              style: AppTheme.headingSmall,
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionButton(
-                    context,
-                    icon: Icons.location_on_rounded,
-                    label: 'Live Tracking',
-                    color: AppColors.primary,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LiveTrackingScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionButton(
-                    context,
-                    icon: Icons.directions_car_rounded,
-                    label: 'Manage Vehicles',
-                    color: AppColors.success,
-                    onTap: () {
-                      // Navigate to vehicles screen
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionButton(
-                    context,
-                    icon: Icons.people_rounded,
-                    label: 'Drivers',
-                    color: Colors.purple,
-                    onTap: () {
-                      // Navigate to drivers screen
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.secondary,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.location_on_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 30,
+            TextButton(
+              onPressed: () {},
               child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
+                'View All',
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.primaryBlue,
+                  fontWeight: FontWeight.w600,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildRecentActivities(BuildContext context,List<Activity> activities) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Recent Activities',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...activities.map((activity) => _buildActivityItem(context,activity)),
-          ],
+        const SizedBox(height: 12),
+        _buildActivityItem(
+          'MH 12 AB 1234',
+          'Shree Ram Nagar, Anand, Gujarat, India 388001',
+          '5 mins ago',
+          Icons.play_circle,
+          AppTheme.accentGreen,
+          context
         ),
-      ),
+        _buildActivityItem(
+          'DL 01 CD 5678',
+          'India Gate, New Delhi, India',
+          '23 mins ago',
+          Icons.check_circle,
+          AppTheme.success,
+          context
+        ),
+        _buildActivityItem(
+          'KA 03 EF 9012',
+          'Shree Ram Nagar, Anand, Gujarat, India 388001',
+          '2 hours ago',
+          Icons.warning,
+          AppTheme.warning,
+          context
+        ),
+        
+      ],
     );
   }
 
-  Widget _buildActivityItem(BuildContext context, Activity activity) {
-    Color dotColor;
-    switch (activity.status) {
-      case ActivityStatus.active:
-        dotColor = AppColors.success;
-        break;
-      case ActivityStatus.completed:
-        dotColor = AppColors.primary;
-        break;
-      case ActivityStatus.stopped:
-        dotColor = AppColors.textSecondary;
-        break;
-    }
-
+  Widget _buildActivityItem(
+    String title,
+    String subtitle,
+    String time,
+    IconData icon,
+    Color color,
+    BuildContext context
+  ) {
     return InkWell(
-      onTap:(){
-         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VehicleDetailsScreen(vehicle: MockData.getVehicles()[0]),
-            ),
-          );
+      onTap: () {
+        Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>  VehicleTrackingScreen(),
+                    ),
+                  );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.secondary,
-          borderRadius: BorderRadius.circular(8),
-        ),
+        padding: const EdgeInsets.all(16),
+        decoration: AppTheme.cardDecoration,
         child: Row(
           children: [
             Container(
-              height: 8,
-              width: 8,
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: dotColor,
+                color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
+              child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        activity.vehicle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      StatusBadge(
-                        label: activity.activity,
-                        small: true,
-                        backgroundColor: AppColors.background,
-                        color: AppColors.textSecondary,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
                   Text(
-                    '${activity.driver} • ${activity.location}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
+                    title,
+                    style: AppTheme.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTheme.bodySmall.copyWith(
+                      color: AppTheme.textGray,
                     ),
                   ),
                 ],
               ),
             ),
             Text(
-              activity.time,
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.textMuted,
+              time,
+              style: AppTheme.caption.copyWith(
+                color: AppTheme.textLight,
               ),
             ),
           ],

@@ -1,374 +1,224 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/company_profile_screen.dart';
-import 'package:intrack_customer/screens/contact_support_screen.dart';
-import 'package:intrack_customer/screens/help_screen.dart';
-import 'package:intrack_customer/screens/notifications_screen.dart';
-import 'package:intrack_customer/screens/settings_screen.dart';
-import '../theme/app_colors.dart';
-import '../widgets/mobile_header.dart';
-import 'subscription_screen.dart';
+import 'package:intrack_customer/screens/subscription_screen.dart';
 
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MobileHeader(
-        title: 'Menu',
-        subtitle: 'Settings & More',
-        canGoBack: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // User Profile Card
-            InkWell(
-              onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CompanyProfileScreen(),
+      backgroundColor: const Color(0xffF5F7FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                  
+                    children: [
+                      Text("Menu",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                      Text("Manage your account and settings",style: TextStyle(fontWeight: FontWeight.w400,color: Colors.grey, fontSize: 12),),
+                    ],
                   ),
-                );
-                
-              },
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                ),
+                const SizedBox(height: 10),
+                // ------------------- COMPANY CARD -------------------
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 32,
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        child: Text(
-                          'TS',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffEBF3FF),
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        child: const Icon(Icons.business, color: Colors.blue, size: 28),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Transport Solutions',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
+                          children: const [
                             Text(
-                              'contact@transportsolutions.in',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
+                              "Transport Solutions Pvt Ltd",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Business Plan • 10/25 vehicles",
+                              style: TextStyle(fontSize: 13, color: Colors.grey),
                             ),
                           ],
                         ),
                       ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Account Section
-            _buildSectionHeader('Account'),
-            _buildMenuItem(
-              context,
-              icon: Icons.credit_card_rounded,
-              title: 'Subscription',
-              subtitle: 'Manage your plan',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SubscriptionScreen(),
+        
+                const SizedBox(height: 20),
+        
+                // ------------------- ACCOUNT & BILLING -------------------
+                const SectionHeader("Account & Billing"),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SubscriptionPage()));
+                  },
+                  child: SettingsTile(
+                    icon: Icons.credit_card,
+                    iconColor: Colors.grey.shade800,
+                    title: "Subscription",
+                    subtitle: "Manage your plan and billing",
                   ),
-                );
-              },
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.person_rounded,
-              title: 'Profile Settings',
-              subtitle: 'Edit your profile',
-              onTap: (){
-                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsScreen(),
-                  ),
-                );
-                
-              }
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.notifications_rounded,
-              title: 'Notifications',
-              subtitle: 'Manage alerts',
-              onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen(),
-                  ),
-                );
-                
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Preferences Section
-            _buildSectionHeader('Preferences'),
-            _buildMenuItem(
-              context,
-              icon: Icons.language_rounded,
-              title: 'Language',
-              subtitle: 'English',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen(),
-                  ),
-                );
-                
-              },
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.dark_mode_rounded,
-              title: 'Theme',
-              subtitle: 'Light mode',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen(),
-                  ),
-                );
-                
-              },
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.map_rounded,
-              title: 'Map Settings',
-              subtitle: 'Configure map preferences',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen(),
-                  ),
-                );
-                
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Support Section
-            _buildSectionHeader('Support'),
-            _buildMenuItem(
-              context,
-              icon: Icons.help_rounded,
-              title: 'Help & FAQ',
-              subtitle: 'Get help',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HelpScreen(),
-                  ),
-                );
-                
-              },
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.chat_rounded,
-              title: 'Contact Support',
-              subtitle: 'Reach out to us',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ContactSupportScreen(),
-                  ),
-                );
-                
-              },
-
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.info_rounded,
-              title: 'About',
-              subtitle: 'App version 1.0.0',
-               onTap: () {
-                
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HelpScreen(),
-                  ),
-                );
-                
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Logout Button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  _showLogoutDialog(context);
-                },
-                icon: Icon(Icons.logout, color: AppColors.error),
-                label: Text(
-                  'Logout',
-                  style: TextStyle(color: AppColors.error),
                 ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.error),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+        
+                // const SizedBox(height: 18),
+        
+                // ------------------- SUPPORT & SETTINGS -------------------
+                const SectionHeader("Support & Settings"),
+               
+                SettingsTile(
+                  icon: Icons.notifications,
+                  iconColor: Colors.grey.shade800,
+                  title: "Notifications",
+                  subtitle: "Alert settings and history",
                 ),
-              ),
+                SettingsTile(
+                  icon: Icons.help_outline,
+                  iconColor: Colors.grey.shade800,
+                  title: "Help & Support",
+                  subtitle: "FAQs and customer support",
+                ),
+                SettingsTile(
+                  icon: Icons.lock_outline,
+                  iconColor: Colors.grey.shade800,
+                  title: "Privacy Policy",
+                  subtitle: "Data protection and privacy",
+                ),
+        
+              
+        
+                const SizedBox(height: 30),
+        
+                // ------------------- FOOTER -------------------
+                const Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "IN-Track v2.1.0",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        "Made in India 🇮🇳 for Indian Transport Companies",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader(String title) {
+class SectionHeader extends StatelessWidget {
+  final String title;
+  const SectionHeader(this.title, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 12,
+        style: const TextStyle(
+          fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-          letterSpacing: 0.5,
+          color: Colors.black87,
         ),
       ),
     );
   }
+}
 
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    VoidCallback? onTap,
-  }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap ?? () {},
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: AppColors.textSecondary,
-              ),
-            ],
-          ),
-        ),
+class SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+
+  const SettingsTile({
+    super.key,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom:8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          )
+        ],
       ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Perform logout
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xffF2F4F7),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text('Logout'),
+            child: Icon(icon, color: iconColor, size: 28),
           ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 3),
+                Text(subtitle,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios,
+              size: 18, color: Colors.grey),
         ],
       ),
     );

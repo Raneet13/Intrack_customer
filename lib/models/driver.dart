@@ -1,52 +1,55 @@
 class Driver {
-  final int id;
+  final String id;
   final String name;
-  final String email;
   final String phone;
+  final String email;
   final String licenseNumber;
-  final String licenseExpiry;
-  final String assignedVehicle;
-  final DriverStatus status;
-  final String joinDate;
-  final String lastActive;
-  final String? avatarUrl;
-  final double? rating;
-  final int? totalTrips;
-  final int? totalKms;
+  final DateTime licenseExpiry;
+  final String address;
+  final String status;
+  final String? currentVehicleId;
+  final String? currentVehicleName;
+  final String? profileImage;
+  final DateTime joinDate;
+  final int totalTrips;
+  final double totalKm;
+  final double rating;
 
   Driver({
     required this.id,
     required this.name,
-    required this.email,
     required this.phone,
+    required this.email,
     required this.licenseNumber,
     required this.licenseExpiry,
-    required this.assignedVehicle,
+    required this.address,
     required this.status,
+    this.currentVehicleId,
+    this.currentVehicleName,
+    this.profileImage,
     required this.joinDate,
-    required this.lastActive,
-    this.avatarUrl,
-    this.rating,
-    this.totalTrips,
-    this.totalKms,
+    required this.totalTrips,
+    required this.totalKm,
+    required this.rating, required String assignedVehicle, required String lastActive, required int totalKms,
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
       id: json['id'],
       name: json['name'],
-      email: json['email'],
       phone: json['phone'],
+      email: json['email'],
       licenseNumber: json['licenseNumber'],
-      licenseExpiry: json['licenseExpiry'],
-      assignedVehicle: json['assignedVehicle'],
-      status: DriverStatus.fromString(json['status']),
-      joinDate: json['joinDate'],
-      lastActive: json['lastActive'],
-      avatarUrl: json['avatarUrl'],
-      rating: json['rating']?.toDouble(),
-      totalTrips: json['totalTrips'],
-      totalKms: json['totalKms'],
+      licenseExpiry: DateTime.parse(json['licenseExpiry']),
+      address: json['address'],
+      status: json['status'],
+      currentVehicleId: json['currentVehicleId'],
+      currentVehicleName: json['currentVehicleName'],
+      profileImage: json['profileImage'],
+      joinDate: DateTime.parse(json['joinDate']),
+      totalTrips: json['totalTrips'] ?? 0,
+      totalKm: json['totalKm']?.toDouble() ?? 0.0,
+      rating: json['rating']?.toDouble() ?? 0.0, assignedVehicle: '', lastActive: '', totalKms: 22,
     );
   }
 
@@ -54,91 +57,62 @@ class Driver {
     return {
       'id': id,
       'name': name,
-      'email': email,
       'phone': phone,
+      'email': email,
       'licenseNumber': licenseNumber,
-      'licenseExpiry': licenseExpiry,
-      'assignedVehicle': assignedVehicle,
-      'status': status.toString(),
-      'joinDate': joinDate,
-      'lastActive': lastActive,
-      'avatarUrl': avatarUrl,
-      'rating': rating,
+      'licenseExpiry': licenseExpiry.toIso8601String(),
+      'address': address,
+      'status': status,
+      'currentVehicleId': currentVehicleId,
+      'currentVehicleName': currentVehicleName,
+      'profileImage': profileImage,
+      'joinDate': joinDate.toIso8601String(),
       'totalTrips': totalTrips,
-      'totalKms': totalKms,
+      'totalKm': totalKm,
+      'rating': rating,
     };
   }
 
-  String getInitials() {
-    List<String> names = name.split(' ');
-    if (names.length >= 2) {
-      return '${names[0][0]}${names[1][0]}'.toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  }
-
   Driver copyWith({
-    int? id,
     String? name,
-    String? email,
     String? phone,
+    String? email,
     String? licenseNumber,
-    String? licenseExpiry,
-    String? assignedVehicle,
-    DriverStatus? status,
-    String? joinDate,
-    String? lastActive,
-    String? avatarUrl,
-    double? rating,
+    DateTime? licenseExpiry,
+    String? address,
+    String? status,
+    String? currentVehicleId,
+    String? currentVehicleName,
+    String? profileImage,
     int? totalTrips,
-    int? totalKms,
+    double? totalKm,
+    double? rating,
   }) {
     return Driver(
-      id: id ?? this.id,
+      id: id,
       name: name ?? this.name,
-      email: email ?? this.email,
       phone: phone ?? this.phone,
+      email: email ?? this.email,
       licenseNumber: licenseNumber ?? this.licenseNumber,
       licenseExpiry: licenseExpiry ?? this.licenseExpiry,
-      assignedVehicle: assignedVehicle ?? this.assignedVehicle,
+      address: address ?? this.address,
       status: status ?? this.status,
-      joinDate: joinDate ?? this.joinDate,
-      lastActive: lastActive ?? this.lastActive,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      rating: rating ?? this.rating,
+      currentVehicleId: currentVehicleId ?? this.currentVehicleId,
+      currentVehicleName: currentVehicleName ?? this.currentVehicleName,
+      profileImage: profileImage ?? this.profileImage,
+      joinDate: joinDate,
       totalTrips: totalTrips ?? this.totalTrips,
-      totalKms: totalKms ?? this.totalKms,
+      totalKm: totalKm ?? this.totalKm,
+      rating: rating ?? this.rating, assignedVehicle: '', lastActive: '', totalKms: 22,
     );
   }
-}
 
-enum DriverStatus {
-  active,
-  inactive,
-  onLeave;
-
-  static DriverStatus fromString(String status) {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return DriverStatus.active;
-      case 'inactive':
-        return DriverStatus.inactive;
-      case 'on leave':
-        return DriverStatus.onLeave;
-      default:
-        return DriverStatus.inactive;
-    }
+  bool get isLicenseExpiring {
+    final daysUntilExpiry = licenseExpiry.difference(DateTime.now()).inDays;
+    return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
   }
 
-  @override
-  String toString() {
-    switch (this) {
-      case DriverStatus.active:
-        return 'Active';
-      case DriverStatus.inactive:
-        return 'Inactive';
-      case DriverStatus.onLeave:
-        return 'On Leave';
-    }
+  bool get isLicenseExpired {
+    return licenseExpiry.isBefore(DateTime.now());
   }
 }

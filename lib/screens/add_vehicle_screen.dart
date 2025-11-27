@@ -26,6 +26,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
   late TextEditingController _phoneController;
   
   late String _vehicleType;
+  late String _selectDriverName;
+  final List<String> _selectDriver = ['Dibyajyoti', 'Ranjan', 'Padmanav', 'Bablu'];
   final List<String> _vehicleTypes = ['Car', 'Truck', 'Van', 'Bus'];
 
   @override
@@ -48,12 +50,13 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
       text: widget.editingVehicle?.year.toString() ?? '',
     );
     _driverController = TextEditingController(
-      text: widget.editingVehicle?.driver ?? '',
+      text: widget.editingVehicle?.driverName ?? '',
     );
     _phoneController = TextEditingController(
       text: widget.editingVehicle?.driverPhone ?? '',
     );
-    _vehicleType = widget.editingVehicle?.type ?? 'Car';
+    _vehicleType = 'Car';
+    _selectDriverName = 'Dibyajyoti';
   }
 
   @override
@@ -80,20 +83,20 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
             : 'Enter vehicle details',
         canGoBack: true,
         action: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: _saveVehicle,
-              icon: const Icon(Icons.save, size: 16),
-              label: const Text('Save'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                textStyle: const TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 8.0),
+          //   child: ElevatedButton.icon(
+          //     onPressed: _saveVehicle,
+          //     icon: const Icon(Icons.save, size: 16),
+          //     label: const Text('Save'),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: AppColors.primary,
+          //       foregroundColor: Colors.white,
+          //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          //       textStyle: const TextStyle(fontSize: 14),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: SafeArea(
@@ -122,6 +125,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           Text("Vehicle Name *"),
                         const SizedBox(height: 4),
                         TextFormField(
+                         readOnly: true, 
                           controller: _vehicleName,
                           decoration: InputDecoration(
                             // labelText: 'Plate Number *',
@@ -142,6 +146,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                         const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
                           value: _vehicleType,
+                          
                           decoration: InputDecoration(
                             // labelText: 'Vehicle Type *',
                             border: OutlineInputBorder(
@@ -150,6 +155,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           ),
                           items: _vehicleTypes.map((type) {
                             return DropdownMenuItem(
+                              enabled: false,
                               value: type,
                               child: Text(type),
                             );
@@ -160,88 +166,11 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             });
                           },
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                    Text("Make *"),
-                        const SizedBox(height: 4),
-                                  TextFormField(
-                                    controller: _makeController,
-                                    decoration: InputDecoration(
-                                      // labelText: 'Make *',
-                                      hintText: 'Tata',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter make';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                    Text("Model *"),
-                        const SizedBox(height: 4),
-                                  TextFormField(
-                                    controller: _modelController,
-                                    decoration: InputDecoration(
-                                      // labelText: 'Model *',
-                                      hintText: 'LPT 1613',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter model';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                          Text("Year *"),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _yearController,
-                          decoration: InputDecoration(
-                            // labelText: 'Year *',
-                            hintText: '2022',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter year';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
                           Text("Plate Number *"),
                         const SizedBox(height: 4),
                         TextFormField(
+                          readOnly: true,
                           controller: _plateNumberController,
                           decoration: InputDecoration(
                             // labelText: 'Plate Number *',
@@ -278,45 +207,58 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                          Text("Driver Name *"),
+                         const SizedBox(height: 16),
+                        Text("Select Driver *"),
                         const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _driverController,
+                        DropdownButtonFormField<String>(
+                          value: _selectDriverName,
                           decoration: InputDecoration(
-                            // labelText: 'Driver Name *',
-                            hintText: 'Raj Sharma',
+                            // labelText: 'Vehicle Type *',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter driver name';
-                            }
-                            return null;
+                          items: _selectDriver.map((type) {
+                            return DropdownMenuItem(
+                              value: type,
+                              child: Text(type),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectDriverName = value!;
+                            });
                           },
                         ),
                         const SizedBox(height: 16),
-                          Text("Driver Phone *"),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _phoneController,
-                          decoration: InputDecoration(
-                            // labelText: 'Driver Phone *',
-                            hintText: '+91 98765 43210',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blue.shade300),
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.blue.shade50,
+                            
                           ),
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter phone number';
-                            }
-                            return null;
-                          },
+                          child:Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Current Driver",style: TextStyle(
+                                  fontSize: 14,color: Colors.blue
+                                )),
+                                SizedBox(height: 8),
+                                Text("Dibyajyoti",style: TextStyle(
+                                  fontSize: 10
+                                ),),
+                                SizedBox(height: 4),
+                                Text("+91 98765 43210",style: TextStyle(
+                                  fontSize: 10,color: Colors.blue
+                                ),),
+                              ],
+                            )
                         ),
+                       
                       ],
                     ),
                   ),

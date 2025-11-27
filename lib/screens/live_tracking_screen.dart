@@ -207,7 +207,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             _buildInfoRow(
                               icon: Icons.person,
                               label: 'Driver',
-                              value: selectedVehicle!.driver,
+                              value: selectedVehicle!.driverName,
                             ),
                             _buildInfoRow(
                               icon: Icons.location_on,
@@ -226,7 +226,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                 label: 'Fuel Level',
                                 value: '${selectedVehicle!.fuelLevel}%',
                                 valueColor: AppColors.getFuelColor(
-                                  selectedVehicle!.fuelLevel!,
+                                  selectedVehicle!.fuelLevel!.toInt(),
                                 ),
                               ),
                             if (selectedVehicle!.mileage != null)
