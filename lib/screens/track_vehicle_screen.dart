@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/report_vehicle_details.dart';
+import 'package:intrack_customer/screens/report_vehicle_details/report_vehicle_details.dart';
 import '../theme/app_colors.dart';
 import '../widgets/mobile_header.dart';
 import '../widgets/status_badge.dart';
@@ -8,10 +8,7 @@ import '../models/vehicle.dart';
 class TrackVehicleScreen extends StatelessWidget {
   final Vehicle vehicle;
 
-  const TrackVehicleScreen({
-    Key? key,
-    required this.vehicle,
-  }) : super(key: key);
+  const TrackVehicleScreen({Key? key, required this.vehicle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +21,42 @@ class TrackVehicleScreen extends StatelessWidget {
       'lastUpdate': '2 mins ago',
       'route': 'Mumbai → Pune',
       'estimatedArrival': '45 mins',
-      'distanceToDestination': '52 km'
+      'distanceToDestination': '52 km',
     };
 
     final recentLocations = [
-      {'time': '2 mins ago', 'location': 'NH-4 Pune-Mumbai Highway, Km 45', 'speed': '65 km/h'},
-      {'time': '10 mins ago', 'location': 'Lonavala Toll Plaza', 'speed': '20 km/h'},
-      {'time': '25 mins ago', 'location': 'Khandala Viewpoint', 'speed': '0 km/h'},
-      {'time': '1 hour ago', 'location': 'Pune City Center', 'speed': '35 km/h'},
-      {'time': '2 hours ago', 'location': 'Hadapsar Industrial Area', 'speed': '25 km/h'},
+      {
+        'time': '2 mins ago',
+        'location': 'NH-4 Pune-Mumbai Highway, Km 45',
+        'speed': '65 km/h',
+      },
+      {
+        'time': '10 mins ago',
+        'location': 'Lonavala Toll Plaza',
+        'speed': '20 km/h',
+      },
+      {
+        'time': '25 mins ago',
+        'location': 'Khandala Viewpoint',
+        'speed': '0 km/h',
+      },
+      {
+        'time': '1 hour ago',
+        'location': 'Pune City Center',
+        'speed': '35 km/h',
+      },
+      {
+        'time': '2 hours ago',
+        'location': 'Hadapsar Industrial Area',
+        'speed': '25 km/h',
+      },
     ];
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: MobileHeader(
         title: 'Track Vehicle',
-        
+
         subtitle: "MH12AB1234",
         canGoBack: true,
         action: [
@@ -49,17 +66,20 @@ class TrackVehicleScreen extends StatelessWidget {
               onPressed: () {
                 // Call driver
                 Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>  VehicleTrackingScreen(),
-                    ),
-                  );
+                  MaterialPageRoute(
+                    builder: (context) => VehicleTrackingScreen(),
+                  ),
+                );
               },
               icon: const Icon(Icons.route, size: 16),
               label: const Text('Reports'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 textStyle: const TextStyle(fontSize: 14),
               ),
             ),
@@ -84,7 +104,10 @@ class TrackVehicleScreen extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [Colors.blue.shade100, Colors.green.shade100],
+                            colors: [
+                              Colors.blue.shade100,
+                              Colors.green.shade100,
+                            ],
                           ),
                         ),
                         child: Stack(
@@ -109,7 +132,8 @@ class TrackVehicleScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    mockLocationData['currentLocation'] as String,
+                                    mockLocationData['currentLocation']
+                                        as String,
                                     style: const TextStyle(
                                       fontSize: 13,
                                       color: Colors.black54,
@@ -127,7 +151,10 @@ class TrackVehicleScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: Colors.blue.shade600,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 4),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 4,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.2),
@@ -162,7 +189,9 @@ class TrackVehicleScreen extends StatelessWidget {
                                 icon: const Icon(Icons.navigation, size: 16),
                                 label: const Text('Directions'),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ),
@@ -170,10 +199,15 @@ class TrackVehicleScreen extends StatelessWidget {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.share_location, size: 16),
+                                icon: const Icon(
+                                  Icons.share_location,
+                                  size: 16,
+                                ),
                                 label: const Text('Share Location'),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ),
@@ -184,8 +218,7 @@ class TrackVehicleScreen extends StatelessWidget {
                   ),
                 ),
               ),
-        
-            
+
               // // Trip Information Card
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -244,9 +277,9 @@ class TrackVehicleScreen extends StatelessWidget {
               //     ),
               //   ),
               // ),
-        
+
               // const SizedBox(height: 16),
-        
+
               // Driver Information Card
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -272,7 +305,10 @@ class TrackVehicleScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                               ),
                             ),
                           ],
@@ -319,9 +355,9 @@ class TrackVehicleScreen extends StatelessWidget {
                   ),
                 ),
               ),
-        
+
               // const SizedBox(height: 16),
-        
+
               // // Location History Card
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -407,9 +443,8 @@ class TrackVehicleScreen extends StatelessWidget {
               //     ),
               //   ),
               // ),
-        
               const SizedBox(height: 16),
-                // Vehicle Status Card
+              // Vehicle Status Card
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Card(
@@ -486,7 +521,9 @@ class TrackVehicleScreen extends StatelessWidget {
                                 icon: Icons.local_gas_station,
                                 label: 'Fuel Level',
                                 value: '${vehicle.fuelLevel ?? 0}%',
-                                valueColor: _getFuelColor(vehicle.fuelLevel?.toInt()),
+                                valueColor: _getFuelColor(
+                                  vehicle.fuelLevel?.toInt(),
+                                ),
                               ),
                             ),
                             Expanded(
@@ -503,9 +540,8 @@ class TrackVehicleScreen extends StatelessWidget {
                   ),
                 ),
               ),
-        
+
               const SizedBox(height: 16),
-        
             ],
           ),
         ),
@@ -538,10 +574,7 @@ class TrackVehicleScreen extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ],
           ),
@@ -556,10 +589,7 @@ class TrackVehicleScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.black54,
-          ),
+          style: const TextStyle(fontSize: 13, color: Colors.black54),
         ),
         Text(
           value,

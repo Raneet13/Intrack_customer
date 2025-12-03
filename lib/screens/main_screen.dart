@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/reports_screen.dart';
+import 'package:intrack_customer/screens/reports_screen/reports_screen.dart';
 import '../theme/app_theme.dart';
-import 'dashboard_screen.dart';
-import 'vehicles_screen.dart';
-import 'drivers_screen.dart';
-import 'menu_screen.dart';
+import 'dashboard_screen/dashboard_screen.dart';
+import 'vehicles_screen/vehicles_screen.dart';
+import 'drivers_screen/drivers_screen.dart';
+import 'menu_screen/menu_screen.dart';
 
 class MainScreen extends StatefulWidget {
-   int currentIndex;
-   MainScreen({required this.currentIndex, super.key});
+  int currentIndex;
+  MainScreen({required this.currentIndex, super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -28,10 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: widget.currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: widget.currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [

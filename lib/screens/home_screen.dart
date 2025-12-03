@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
-import 'dashboard_screen.dart';
-import 'vehicles_screen.dart';
-import 'drivers_screen.dart';
-import 'reports_screen.dart';
-import 'menu_screen.dart';
+import 'dashboard_screen/dashboard_screen.dart';
+import 'vehicles_screen/vehicles_screen.dart';
+import 'drivers_screen/drivers_screen.dart';
+import 'reports_screen/reports_screen.dart';
+import 'menu_screen/menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -33,10 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: _currentIndex,
         onTap: _onTabSelected,

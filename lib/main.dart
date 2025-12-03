@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/login_screen/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/vehicle_provider.dart';
@@ -11,7 +11,7 @@ import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set status bar color
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -19,7 +19,7 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ),
   );
-  
+
   runApp(const MyApp());
 }
 
@@ -54,12 +54,12 @@ class AppNavigator extends StatelessWidget {
         if (authProvider.isLoading) {
           return const SplashScreen();
         }
-        
+
         if (!authProvider.isAuthenticated) {
           return const LoginScreen();
         }
-        
-        return  MainScreen(currentIndex: 0,);
+
+        return MainScreen(currentIndex: 0);
       },
     );
   }
