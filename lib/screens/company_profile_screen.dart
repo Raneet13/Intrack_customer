@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../widgets/mobile_header.dart';
 
 class CompanyProfileScreen extends StatefulWidget {
-  const CompanyProfileScreen({Key? key}) : super(key: key);
+  const CompanyProfileScreen({super.key});
 
   @override
   State<CompanyProfileScreen> createState() => _CompanyProfileScreenState();
@@ -11,10 +11,16 @@ class CompanyProfileScreen extends StatefulWidget {
 
 class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _companyNameController = TextEditingController(text: 'Transport Solutions Pvt Ltd');
-  final _emailController = TextEditingController(text: 'contact@transportsolutions.in');
+  final _companyNameController = TextEditingController(
+    text: 'Transport Solutions Pvt Ltd',
+  );
+  final _emailController = TextEditingController(
+    text: 'contact@transportsolutions.in',
+  );
   final _phoneController = TextEditingController(text: '+91 98765 43210');
-  final _addressController = TextEditingController(text: 'Plot No. 45, Industrial Area');
+  final _addressController = TextEditingController(
+    text: 'Plot No. 45, Industrial Area',
+  );
   final _cityController = TextEditingController(text: 'Pune');
   final _stateController = TextEditingController(text: 'Maharashtra');
   final _pincodeController = TextEditingController(text: '411001');
@@ -125,10 +131,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               // Basic Information
               const Text(
                 'Basic Information',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
 
               const SizedBox(height: 12),
@@ -188,10 +191,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               // Address Information
               const Text(
                 'Address Information',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
 
               const SizedBox(height: 12),
@@ -270,10 +270,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               // Tax Information
               const Text(
                 'Tax Information',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
 
               const SizedBox(height: 12),
@@ -387,9 +384,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
           keyboardType: keyboardType,
           enabled: enabled,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 12,

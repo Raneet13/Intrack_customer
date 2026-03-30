@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intrack_customer/screens/home_screen.dart';
 import 'package:intrack_customer/theme/app_colors.dart';
 import 'dart:async';
-import '../theme/app_theme.dart';
 
 class OtpValidationScreen extends StatefulWidget {
   const OtpValidationScreen({super.key});
@@ -12,10 +11,12 @@ class OtpValidationScreen extends StatefulWidget {
 }
 
 class _OtpValidationScreenState extends State<OtpValidationScreen> {
-  final List<TextEditingController> _otpControllers = 
-      List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  
+
   Timer? _timer;
   int _otpTimer = 30;
   bool _canResendOtp = false;
@@ -55,9 +56,9 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
     String otp = _otpControllers.map((controller) => controller.text).join();
     if (otp.length == 4) {
       Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
       // Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
     }
   }
@@ -83,7 +84,9 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
     }
 
     // Check if all fields are filled
-    bool allFilled = _otpControllers.every((controller) => controller.text.isNotEmpty);
+    bool allFilled = _otpControllers.every(
+      (controller) => controller.text.isNotEmpty,
+    );
     if (allFilled) {
       _verifyOtp();
     }
@@ -109,7 +112,6 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
         child: Column(
           children: [
             // const AndroidStatusBar(backgroundColor: AppColors.primaryIndigo),
-            
             Expanded(
               child: Stack(
                 children: [
@@ -145,38 +147,41 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 80),
-                        
+
                         // Header
                         Column(
                           children: [
-                           Container(
-                                width: 112,
-                                height: 112,
-                                margin: const EdgeInsets.only(bottom: 24),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.15),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                        child: Image.asset(
-                          "assets/intrack3.png",
-                          height: 88,
-                          width: 88,
-                          
-                          errorBuilder: (context, error, stackTrace) => 
-                              const Icon(Icons.error, size: 48, color: Colors.red)
-                        ),
-                      ),
+                            Container(
+                              width: 112,
+                              height: 112,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
-                              
-                            
+                              child: Center(
+                                child: Image.asset(
+                                  "assets/intrack3.png",
+                                  height: 88,
+                                  width: 88,
+
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                        Icons.error,
+                                        size: 48,
+                                        color: Colors.red,
+                                      ),
+                                ),
+                              ),
+                            ),
+
                             const Text(
                               'Enter OTP',
                               style: TextStyle(
@@ -227,10 +232,11 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                
+
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   // spacing: 12,
                                   children: List.generate(4, (index) {
                                     return Padding(
@@ -240,7 +246,7 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                                         height: 56,
                                         child: TextFormField(
                                           controller: _otpControllers[index],
-                                          
+
                                           focusNode: _focusNodes[index],
                                           keyboardType: TextInputType.number,
                                           textAlign: TextAlign.center,
@@ -252,24 +258,27 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                                           decoration: InputDecoration(
                                             contentPadding: EdgeInsets.zero,
                                             filled: true,
-      fillColor: Colors.white,
+                                            fillColor: Colors.white,
                                             counterText: '',
                                             border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               borderSide: const BorderSide(
                                                 color: AppColors.gray200,
                                                 width: 2,
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                              borderSide:  BorderSide(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
                                                 color: AppColors.vehicleIdle,
                                                 width: 2,
                                               ),
                                             ),
                                           ),
-                                          onChanged: (value) => _onOtpChanged(index, value),
+                                          onChanged: (value) =>
+                                              _onOtpChanged(index, value),
                                         ),
                                       ),
                                     );
@@ -309,7 +318,7 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                                       ),
                                     ),
                                   ),
-                                
+
                                 const SizedBox(height: 24),
 
                                 // Verify Button
@@ -326,7 +335,8 @@ class _OtpValidationScreenState extends State<OtpValidationScreen> {
                                       ),
                                     ),
                                     child: const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(Icons.check, size: 20),
                                         SizedBox(width: 8),

@@ -6,10 +6,7 @@ import '../models/vehicle.dart';
 class AddVehicleScreen extends StatefulWidget {
   final Vehicle? editingVehicle;
 
-  const AddVehicleScreen({
-    Key? key,
-    this.editingVehicle,
-  }) : super(key: key);
+  const AddVehicleScreen({super.key, this.editingVehicle});
 
   @override
   State<AddVehicleScreen> createState() => _AddVehicleScreenState();
@@ -17,17 +14,22 @@ class AddVehicleScreen extends StatefulWidget {
 
 class _AddVehicleScreenState extends State<AddVehicleScreen> {
   final _formKey = GlobalKey<FormState>();
-   late TextEditingController _vehicleName;
+  late TextEditingController _vehicleName;
   late TextEditingController _plateNumberController;
   late TextEditingController _makeController;
   late TextEditingController _modelController;
   late TextEditingController _yearController;
   late TextEditingController _driverController;
   late TextEditingController _phoneController;
-  
+
   late String _vehicleType;
   late String _selectDriverName;
-  final List<String> _selectDriver = ['Dibyajyoti', 'Ranjan', 'Padmanav', 'Bablu'];
+  final List<String> _selectDriver = [
+    'Dibyajyoti',
+    'Ranjan',
+    'Padmanav',
+    'Bablu',
+  ];
   final List<String> _vehicleTypes = ['Car', 'Truck', 'Van', 'Bus'];
 
   @override
@@ -78,7 +80,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
       backgroundColor: Colors.grey[50],
       appBar: MobileHeader(
         title: isEditing ? 'Edit Vehicle' : 'Add Vehicle',
-        subtitle: isEditing 
+        subtitle: isEditing
             ? 'Update ${widget.editingVehicle!.plateNumber}'
             : 'Enter vehicle details',
         canGoBack: true,
@@ -122,10 +124,10 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                          Text("Vehicle Name *"),
+                        Text("Vehicle Name *"),
                         const SizedBox(height: 4),
                         TextFormField(
-                         readOnly: true, 
+                          readOnly: true,
                           controller: _vehicleName,
                           decoration: InputDecoration(
                             // labelText: 'Plate Number *',
@@ -145,8 +147,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                         Text("Vehicle Type *"),
                         const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-                          value: _vehicleType,
-                          
+                          initialValue: _vehicleType,
+
                           decoration: InputDecoration(
                             // labelText: 'Vehicle Type *',
                             border: OutlineInputBorder(
@@ -166,8 +168,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             });
                           },
                         ),
-                      const SizedBox(height: 16),
-                          Text("Plate Number *"),
+                        const SizedBox(height: 16),
+                        Text("Plate Number *"),
                         const SizedBox(height: 4),
                         TextFormField(
                           readOnly: true,
@@ -190,9 +192,9 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Driver Information Card
                 Card(
                   child: Padding(
@@ -207,11 +209,11 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                         const SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text("Select Driver *"),
                         const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-                          value: _selectDriverName,
+                          initialValue: _selectDriverName,
                           decoration: InputDecoration(
                             // labelText: 'Vehicle Type *',
                             border: OutlineInputBorder(
@@ -238,34 +240,41 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             border: Border.all(color: Colors.blue.shade300),
                             borderRadius: BorderRadius.circular(8),
                             color: Colors.blue.shade50,
-                            
                           ),
-                          child:Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Current Driver",style: TextStyle(
-                                  fontSize: 14,color: Colors.blue
-                                )),
-                                SizedBox(height: 8),
-                                Text("Dibyajyoti",style: TextStyle(
-                                  fontSize: 10
-                                ),),
-                                SizedBox(height: 4),
-                                Text("+91 98765 43210",style: TextStyle(
-                                  fontSize: 10,color: Colors.blue
-                                ),),
-                              ],
-                            )
+                            children: [
+                              Text(
+                                "Current Driver",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "Dibyajyoti",
+                                style: TextStyle(fontSize: 10),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "+91 98765 43210",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                       
                       ],
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Save Button
                 SizedBox(
                   width: double.infinity,
@@ -298,11 +307,11 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
   void _saveVehicle() {
     if (_formKey.currentState!.validate()) {
       final isEditing = widget.editingVehicle != null;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            isEditing 
+            isEditing
                 ? 'Vehicle ${_plateNumberController.text} updated successfully'
                 : 'Vehicle ${_plateNumberController.text} added successfully',
           ),

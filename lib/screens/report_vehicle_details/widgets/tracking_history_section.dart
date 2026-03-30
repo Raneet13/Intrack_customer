@@ -105,7 +105,7 @@ class TrackingHistorySection extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16),
-          ...records.map((record) => TrackingItem(record: record)).toList(),
+          ...records.map((record) => TrackingItem(record: record)),
         ],
       ),
     );

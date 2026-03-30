@@ -135,7 +135,7 @@ class VehiclesScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  "${vehicle.id == "1" ? "In Active" : "Active"}",
+                  vehicle.id == "1" ? "In Active" : "Active",
                   style: TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ),
@@ -229,7 +229,7 @@ class VehiclesScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "${vehicle.id == "1" ? "Expaired" : "Active"}",
+                        vehicle.id == "1" ? "Expaired" : "Active",
                         style: TextStyle(
                           color: vehicle.id == "1"
                               ? Colors.orange
@@ -303,7 +303,7 @@ class VehiclesScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "${vehicle.id == "1" ? "15 May 2025" : "15 Jan 2026"}",
+                            vehicle.id == "1" ? "15 May 2025" : "15 Jan 2026",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,

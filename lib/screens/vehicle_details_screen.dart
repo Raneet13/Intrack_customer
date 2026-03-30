@@ -7,16 +7,13 @@ import '../widgets/status_badge.dart';
 class VehicleDetailsScreen extends StatelessWidget {
   final Vehicle vehicle;
 
-  const VehicleDetailsScreen({
-    Key? key,
-    required this.vehicle,
-  }) : super(key: key);
+  const VehicleDetailsScreen({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MobileHeader(
-         canGoBack: true,
+        canGoBack: true,
         title: vehicle.plateNumber,
         subtitle: '${vehicle.make} ${vehicle.model}',
         showBackButton: true,
@@ -50,10 +47,7 @@ class VehicleDetailsScreen extends StatelessWidget {
             // Vehicle Information
             const Text(
               'Vehicle Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Card(
@@ -65,10 +59,8 @@ class VehicleDetailsScreen extends StatelessWidget {
                     _buildInfoRow('Make', vehicle.make),
                     _buildInfoRow('Model', vehicle.model),
                     _buildInfoRow('Year', vehicle.year.toString()),
-                    if (vehicle.mileage != null)
-                      _buildInfoRow('Mileage', '${vehicle.mileage} KMs'),
-                    if (vehicle.lastLocation != null)
-                      _buildInfoRow('Last Service', vehicle.lastLocation!),
+                    _buildInfoRow('Mileage', '${vehicle.mileage} KMs'),
+                    _buildInfoRow('Last Service', vehicle.lastLocation!),
                   ],
                 ),
               ),
@@ -78,10 +70,7 @@ class VehicleDetailsScreen extends StatelessWidget {
             // Driver Information
             const Text(
               'Driver Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Card(
@@ -100,10 +89,7 @@ class VehicleDetailsScreen extends StatelessWidget {
             // Current Location
             const Text(
               'Current Location',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Card(
@@ -112,10 +98,8 @@ class VehicleDetailsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildInfoRow('Location', vehicle.lastLocation),
-                    if (vehicle.speed != null)
-                      _buildInfoRow('Speed', '${vehicle.speed} km/h'),
-                    if (vehicle.fuelLevel != null)
-                      _buildInfoRow('Fuel Level', '${vehicle.fuelLevel}%'),
+                    _buildInfoRow('Speed', '${vehicle.speed} km/h'),
+                    _buildInfoRow('Fuel Level', '${vehicle.fuelLevel}%'),
                   ],
                 ),
               ),
@@ -152,17 +136,11 @@ class VehicleDetailsScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),

@@ -3,7 +3,7 @@ import '../../widgets/mobile_header.dart';
 import 'widgets/vehicle_report_item.dart';
 
 class ReportsScreen extends StatefulWidget {
-  const ReportsScreen({Key? key}) : super(key: key);
+  const ReportsScreen({super.key});
 
   @override
   State<ReportsScreen> createState() => _ReportsScreenState();
@@ -142,7 +142,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     const SizedBox(height: 16),
                     ...filteredData.map((vehicle) {
                       return VehicleReportItem(vehicle: vehicle);
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

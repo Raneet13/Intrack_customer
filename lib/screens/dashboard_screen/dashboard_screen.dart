@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
+import '../notifications_screen/notifications_screen.dart';
 import 'widgets/stats_section.dart';
 import 'widgets/quick_actions_section.dart';
 import 'widgets/recent_activity_section.dart';
@@ -28,7 +29,14 @@ class DashboardScreen extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.notifications_outlined),
                   color: AppTheme.textDark,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(width: 8),
               ],

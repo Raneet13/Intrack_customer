@@ -4,6 +4,8 @@ import 'widgets/date_tabs_section.dart';
 import 'widgets/tracking_history_section.dart';
 
 class VehicleTrackingScreen extends StatefulWidget {
+  const VehicleTrackingScreen({super.key});
+
   @override
   _VehicleTrackingScreenState createState() => _VehicleTrackingScreenState();
 }

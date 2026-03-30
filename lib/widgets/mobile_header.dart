@@ -9,14 +9,15 @@ class MobileHeader extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? action;
 
   const MobileHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.showBackButton = false,
     this.onBackPressed,
     this.action,
-    this.rightAction, required bool canGoBack,
-  }) : super(key: key);
+    this.rightAction,
+    required bool canGoBack,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -35,10 +36,7 @@ class MobileHeader extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           if (subtitle != null)
             Text(

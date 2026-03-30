@@ -88,7 +88,7 @@ class DropdownTile extends StatelessWidget {
                     Navigator.pop(context);
                   },
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 16),
             ],
           ),

@@ -6,7 +6,7 @@ import 'widgets/quick_link_item.dart';
 import 'widgets/contact_row.dart';
 
 class HelpScreen extends StatelessWidget {
-  const HelpScreen({Key? key}) : super(key: key);
+  const HelpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

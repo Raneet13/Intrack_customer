@@ -7,7 +7,7 @@ import 'reports_screen/reports_screen.dart';
 import 'menu_screen/menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

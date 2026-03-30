@@ -8,7 +8,7 @@ import '../models/vehicle.dart';
 class TrackVehicleScreen extends StatelessWidget {
   final Vehicle vehicle;
 
-  const TrackVehicleScreen({Key? key, required this.vehicle}) : super(key: key);
+  const TrackVehicleScreen({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -522,7 +522,7 @@ class TrackVehicleScreen extends StatelessWidget {
                                 label: 'Fuel Level',
                                 value: '${vehicle.fuelLevel ?? 0}%',
                                 valueColor: _getFuelColor(
-                                  vehicle.fuelLevel?.toInt(),
+                                  vehicle.fuelLevel.toInt(),
                                 ),
                               ),
                             ),

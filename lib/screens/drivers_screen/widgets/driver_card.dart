@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intrack_customer/screens/add_driver_screen.dart';
-import 'package:intl/intl.dart';
 import '../../../theme/app_theme.dart';
 import '../../../models/driver.dart';
 

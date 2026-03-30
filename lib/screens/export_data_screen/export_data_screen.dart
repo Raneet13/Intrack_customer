@@ -6,7 +6,7 @@ import 'widgets/format_option.dart';
 import 'widgets/export_summary_row.dart';
 
 class ExportDataScreen extends StatefulWidget {
-  const ExportDataScreen({Key? key}) : super(key: key);
+  const ExportDataScreen({super.key});
 
   @override
   State<ExportDataScreen> createState() => _ExportDataScreenState();
@@ -120,7 +120,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: dateRange,
+                      initialValue: dateRange,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),

@@ -6,10 +6,7 @@ import '../models/driver.dart';
 class AddDriverScreen extends StatefulWidget {
   final Driver? editingDriver;
 
-  const AddDriverScreen({
-    Key? key,
-    this.editingDriver,
-  }) : super(key: key);
+  const AddDriverScreen({super.key, this.editingDriver});
 
   @override
   State<AddDriverScreen> createState() => _AddDriverScreenState();
@@ -71,7 +68,7 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
       backgroundColor: Colors.grey[50],
       appBar: MobileHeader(
         title: isEditing ? 'Edit Driver' : 'Add Driver',
-        subtitle: isEditing 
+        subtitle: isEditing
             ? 'Update ${widget.editingDriver!.name}'
             : 'Enter driver details',
         canGoBack: true,
@@ -115,8 +112,8 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                          Text("Full Name *"),
-                          const SizedBox(height: 4),
+                        Text("Full Name *"),
+                        const SizedBox(height: 4),
                         TextFormField(
                           readOnly: true,
                           controller: _nameController,
@@ -134,10 +131,10 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                             return null;
                           },
                         ),
-                       
+
                         const SizedBox(height: 16),
-                          Text("Phone Number *"),
-                          const SizedBox(height: 4),
+                        Text("Phone Number *"),
+                        const SizedBox(height: 4),
                         TextFormField(
                           controller: _phoneController,
                           decoration: InputDecoration(
@@ -159,9 +156,9 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // License Information Card
                 Card(
                   child: Padding(
@@ -169,7 +166,6 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-        
                         const Text(
                           'License Information',
                           style: TextStyle(
@@ -178,8 +174,8 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                          Text("Licence Number *"),
-                          const SizedBox(height: 4),
+                        Text("Licence Number *"),
+                        const SizedBox(height: 4),
                         TextFormField(
                           readOnly: true,
                           controller: _licenseController,
@@ -196,15 +192,15 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                             }
                             return null;
                           },
-                        ), const SizedBox(height: 16),
-                         
+                        ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Assignment Card
                 Card(
                   child: Padding(
@@ -219,9 +215,9 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                         const SizedBox(height: 16),
-                          Text("Assigned Vehicle *"),
-                          const SizedBox(height: 4),
+                        const SizedBox(height: 16),
+                        Text("Assigned Vehicle *"),
+                        const SizedBox(height: 4),
                         TextFormField(
                           readOnly: true,
                           controller: _vehicleController,
@@ -233,11 +229,11 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                             ),
                           ),
                         ),
-                         const SizedBox(height: 16),
-                          Text("Status *"),
-                          const SizedBox(height: 4),
+                        const SizedBox(height: 16),
+                        Text("Status *"),
+                        const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-                          value: _status,
+                          initialValue: _status,
                           decoration: InputDecoration(
                             hintText: 'Status *',
                             border: OutlineInputBorder(
@@ -261,9 +257,9 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Save Button
                 SizedBox(
                   width: double.infinity,
@@ -294,11 +290,11 @@ class _AddDriverScreenState extends State<AddDriverScreen> {
   void _saveDriver() {
     if (_formKey.currentState!.validate()) {
       final isEditing = widget.editingDriver != null;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            isEditing 
+            isEditing
                 ? 'Driver ${_nameController.text} updated successfully'
                 : 'Driver ${_nameController.text} added successfully',
           ),

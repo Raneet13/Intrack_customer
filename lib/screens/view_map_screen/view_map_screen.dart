@@ -4,7 +4,7 @@ import 'widgets/map_date_tabs.dart';
 import 'widgets/map_area.dart';
 
 class GPSTrackingScreen extends StatefulWidget {
-  const GPSTrackingScreen({Key? key}) : super(key: key);
+  const GPSTrackingScreen({super.key});
 
   @override
   State<GPSTrackingScreen> createState() => _GPSTrackingScreenState();

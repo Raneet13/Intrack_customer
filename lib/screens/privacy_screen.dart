@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../widgets/mobile_header.dart';
 
 class PrivacyScreen extends StatelessWidget {
-  const PrivacyScreen({Key? key}) : super(key: key);
+  const PrivacyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -178,10 +178,7 @@ class PrivacyScreen extends StatelessWidget {
                     const Expanded(
                       child: Text(
                         'We are committed to protecting your privacy and maintaining the security of your data.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
                     ),
                   ],
@@ -196,10 +193,7 @@ class PrivacyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required String content,
-  }) {
+  Widget _buildSection({required String title, required String content}) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -209,10 +203,7 @@ class PrivacyScreen extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             Text(

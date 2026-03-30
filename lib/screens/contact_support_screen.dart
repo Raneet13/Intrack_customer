@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../widgets/mobile_header.dart';
 
 class ContactSupportScreen extends StatefulWidget {
-  const ContactSupportScreen({Key? key}) : super(key: key);
+  const ContactSupportScreen({super.key});
 
   @override
   State<ContactSupportScreen> createState() => _ContactSupportScreenState();
@@ -54,7 +54,11 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Icon(Icons.phone, size: 32, color: AppColors.primary),
+                            Icon(
+                              Icons.phone,
+                              size: 32,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(height: 8),
                             const Text(
                               'Call Us',
@@ -87,7 +91,11 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Icon(Icons.email, size: 32, color: AppColors.primary),
+                            Icon(
+                              Icons.email,
+                              size: 32,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(height: 8),
                             const Text(
                               'Email Us',
@@ -117,10 +125,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
 
             const Text(
               'Send Us a Message',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 12),
@@ -242,7 +247,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: selectedCategory,
+                        initialValue: selectedCategory,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -390,18 +395,21 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildInfoRow(Icons.access_time, 'Monday - Friday: 9 AM - 8 PM IST'),
+                    _buildInfoRow(
+                      Icons.access_time,
+                      'Monday - Friday: 9 AM - 8 PM IST',
+                    ),
                     const SizedBox(height: 8),
-                    _buildInfoRow(Icons.access_time, 'Saturday: 10 AM - 6 PM IST'),
+                    _buildInfoRow(
+                      Icons.access_time,
+                      'Saturday: 10 AM - 6 PM IST',
+                    ),
                     const SizedBox(height: 8),
                     _buildInfoRow(Icons.access_time, 'Sunday: Closed'),
                     const SizedBox(height: 16),
                     const Text(
                       'We typically respond within 24 hours',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
                     ),
                   ],
                 ),
@@ -418,13 +426,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
       children: [
         Icon(icon, size: 18, color: Colors.grey.shade600),
         const SizedBox(width: 12),
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black87,
-          ),
-        ),
+        Text(text, style: const TextStyle(fontSize: 14, color: Colors.black87)),
       ],
     );
   }

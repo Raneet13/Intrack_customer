@@ -8,12 +8,12 @@ class StatusBadge extends StatelessWidget {
   final bool small;
 
   const StatusBadge({
-    Key? key,
+    super.key,
     required this.label,
     this.color,
     this.backgroundColor,
     this.small = false,
-  }) : super(key: key);
+  });
 
   factory StatusBadge.status(String status, {bool small = false}) {
     Color bgColor;

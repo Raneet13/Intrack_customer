@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intrack_customer/screens/home_screen.dart';
 import 'package:intrack_customer/theme/app_colors.dart';
-import '../theme/app_theme.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -21,9 +20,9 @@ class _SignupScreenState extends State<SignupScreen> {
   void _signup() {
     if (_formKey.currentState!.validate()) {
       Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
       // Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
     }
   }
@@ -32,11 +31,10 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration:  BoxDecoration(gradient: AppColors.blueGreenGradient),
+        decoration: BoxDecoration(gradient: AppColors.blueGreenGradient),
         child: Column(
           children: [
             // const AndroidStatusBar(backgroundColor: Appcolor.primaryGreen),
-            
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -44,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    
+
                     Card(
                       elevation: 12,
                       shape: RoundedRectangleBorder(
@@ -81,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                 ),
                               ),
-                              
+
                               const Text(
                                 'Create Account',
                                 style: TextStyle(
@@ -127,7 +125,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
                                   }
-                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                  if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -164,7 +164,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                       });
                                     },
                                     icon: Icon(
-                                      _showPassword ? Icons.visibility_off : Icons.visibility,
+                                      _showPassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                   ),
                                 ),

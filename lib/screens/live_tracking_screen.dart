@@ -6,7 +6,7 @@ import '../models/vehicle.dart';
 import '../widgets/status_badge.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
-  const LiveTrackingScreen({Key? key}) : super(key: key);
+  const LiveTrackingScreen({super.key});
 
   @override
   State<LiveTrackingScreen> createState() => _LiveTrackingScreenState();
@@ -95,7 +95,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           mini: true,
                           onPressed: () {},
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.my_location, color: AppColors.primary),
+                          child: Icon(
+                            Icons.my_location,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ],
                     ),
@@ -134,7 +137,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<Vehicle>(
-                            value: selectedVehicle,
+                            initialValue: selectedVehicle,
                             decoration: const InputDecoration(
                               labelText: 'Select Vehicle',
                               border: OutlineInputBorder(),
@@ -214,27 +217,24 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                               label: 'Location',
                               value: selectedVehicle!.lastLocation,
                             ),
-                            if (selectedVehicle!.speed != null)
-                              _buildInfoRow(
-                                icon: Icons.speed,
-                                label: 'Speed',
-                                value: '${selectedVehicle!.speed} km/h',
+                            _buildInfoRow(
+                              icon: Icons.speed,
+                              label: 'Speed',
+                              value: '${selectedVehicle!.speed} km/h',
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.local_gas_station,
+                              label: 'Fuel Level',
+                              value: '${selectedVehicle!.fuelLevel}%',
+                              valueColor: AppColors.getFuelColor(
+                                selectedVehicle!.fuelLevel!.toInt(),
                               ),
-                            if (selectedVehicle!.fuelLevel != null)
-                              _buildInfoRow(
-                                icon: Icons.local_gas_station,
-                                label: 'Fuel Level',
-                                value: '${selectedVehicle!.fuelLevel}%',
-                                valueColor: AppColors.getFuelColor(
-                                  selectedVehicle!.fuelLevel!.toInt(),
-                                ),
-                              ),
-                            if (selectedVehicle!.mileage != null)
-                              _buildInfoRow(
-                                icon: Icons.route,
-                                label: 'Mileage',
-                                value: '${selectedVehicle!.mileage} KMs',
-                              ),
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.route,
+                              label: 'Mileage',
+                              value: '${selectedVehicle!.mileage} KMs',
+                            ),
                             const SizedBox(height: 16),
                             Row(
                               children: [
@@ -282,11 +282,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppColors.textSecondary,
-          ),
+          Icon(icon, size: 20, color: AppColors.textSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
