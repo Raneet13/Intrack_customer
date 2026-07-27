@@ -107,48 +107,67 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
         ],
       ),
-      body: notifications.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_off_outlined,
-                    size: 64,
-                    color: Colors.grey.shade400,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No notifications',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
+      body: SafeArea(
+        bottom: false,
+        child: notifications.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 64,
+                      color: Colors.grey.shade400,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'You\'re all caught up!',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Text(
+                      'No notifications',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'You\'re all caught up!',
+                      style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  // If it's the last item, add padding for the floating navbar
+                  if (index == notifications.length - 1) {
+                    return Column(
+                      children: [
+                        NotificationItem(
+                          notification: notification,
+                          onTap: () {
+                            setState(() {
+                              notification['read'] = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 100),
+                      ],
+                    );
+                  }
+                  return NotificationItem(
+                    notification: notification,
+                    onTap: () {
+                      setState(() {
+                        notification['read'] = true;
+                      });
+                    },
+                  );
+                },
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return NotificationItem(
-                  notification: notification,
-                  onTap: () {
-                    setState(() {
-                      notification['read'] = true;
-                    });
-                  },
-                );
-              },
-            ),
+      ),
     );
   }
 }

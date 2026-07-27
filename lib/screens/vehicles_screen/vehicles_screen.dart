@@ -1,65 +1,138 @@
 import 'package:flutter/material.dart';
+import 'package:intrack_customer/providers/auth_provider.dart';
 import 'package:intrack_customer/screens/add_vehicle_screen.dart';
 import 'package:intrack_customer/screens/track_vehicle_screen.dart';
-import 'package:intrack_customer/screens/vehicle_details_screen.dart';
-import 'package:intrack_customer/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../providers/vehicle_provider.dart';
-import '../../theme/app_theme.dart';
 import '../../models/vehicle.dart';
 import 'widgets/vehicles_header_widget.dart';
 
-class VehiclesScreen extends StatelessWidget {
+class VehiclesScreen extends StatefulWidget {
   const VehiclesScreen({super.key});
+
+  @override
+  State<VehiclesScreen> createState() => _VehiclesScreenState();
+}
+
+class _VehiclesScreenState extends State<VehiclesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch vehicles when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final userId = authProvider.userId ?? '';
+      
+      debugPrint('🔍 [VehiclesScreen] Retrieved UserId from AuthProvider: "$userId"');
+      debugPrint('🔍 [VehiclesScreen] Auth status: ${authProvider.isAuthenticated}');
+      
+      if (userId.isEmpty) {
+        debugPrint('⚠️ [VehiclesScreen] WARNING: UserId is empty! API call might fail or return nothing.');
+      }
+      
+      Provider.of<VehicleProvider>(context, listen: false).fetchVehicles(userId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehicles'),
-        actions: [
-          //  Padding(
-          //   padding: const EdgeInsets.only(right: 8.0),
-          //   child: ElevatedButton.icon(
-          //     onPressed: (){
-          //       Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddVehicleScreen()));
-          //     },
-          //     icon: const Icon(Icons.add, size: 16),
-          //     label: const Text('Add Vehicle'),
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: AppColors.primary,
-          //       foregroundColor: Colors.white,
-          //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          //       textStyle: const TextStyle(fontSize: 14),
-          //     ),
-          //   ),
-          // ),
-        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            VehiclesHeaderWidget(),
-            Consumer<VehicleProvider>(
-              builder: (context, provider, _) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  itemCount: provider.vehicles.length,
-                  itemBuilder: (context, index) {
-                    return _buildVehicleCard(context, provider.vehicles[index]);
-                  },
-                );
-              },
+      body: Consumer<VehicleProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading && provider.vehicles.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.errorMessage != null && provider.vehicles.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(provider.errorMessage!, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      final userId = Provider.of<AuthProvider>(context, listen: false).userId ?? '';
+                      provider.fetchVehicles(userId);
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              final userId = Provider.of<AuthProvider>(context, listen: false).userId ?? '';
+              await provider.fetchVehicles(userId);
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  VehiclesHeaderWidget(
+                    activeCount: provider.activeVehicles,
+                    idleCount: provider.idleVehicles,
+                    onSearch: (query) {
+                      // Implement search logic if needed
+                    },
+                  ),
+                  provider.vehicles.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'No vehicles found',
+                                style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'It looks like there are no vehicles associated with your account.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              const SizedBox(height: 24),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  final userId = Provider.of<AuthProvider>(context, listen: false).userId ?? '';
+                                  provider.fetchVehicles(userId);
+                                },
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Check Again'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(16),
+                          itemCount: provider.vehicles.length,
+                          itemBuilder: (context, index) {
+                            return _buildVehicleCard(context, provider.vehicles[index]);
+                          },
+                        ),
+                ],
+              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildVehicleCard(BuildContext context, Vehicle vehicle) {
+    final bool isActive = vehicle.status == '1' || vehicle.status == 'active';
+
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 12),
@@ -67,23 +140,19 @@ class VehiclesScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ---------- TOP ROW ----------
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Vehicle Icon
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -97,22 +166,20 @@ class VehiclesScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
-              // Vehicle Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "MH12AB1234",
-                      style: TextStyle(
+                    Text(
+                      vehicle.registrationNo,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Tata LPT 1613 (2022)",
+                      "${vehicle.name} (${vehicle.type})",
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey.shade700,
@@ -121,81 +188,54 @@ class VehiclesScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Status Badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: vehicle.id == "1"
-                      ? Colors.orange
-                      : const Color(0xff3B73F0),
-                  borderRadius: BorderRadius.circular(20),
+                  color: isActive ? Colors.green : Colors.red,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  vehicle.id == "1" ? "In Active" : "Active",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  isActive ? "Active" : "Inactive",
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
-          // ---------- DRIVER ----------
           Row(
             children: [
               const Icon(Icons.person, size: 20, color: Colors.black54),
               const SizedBox(width: 6),
               Text(
-                "Raj Sharma",
+                vehicle.driverName.isEmpty ? "No Driver" : vehicle.driverName,
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
               ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xffEAF2FF),
-                  borderRadius: BorderRadius.circular(50),
+              if (vehicle.driverPhone.isNotEmpty) ...[
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffEAF2FF),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: const Icon(Icons.call, color: Color(0xff3B73F0), size: 18),
                 ),
-                child: const Icon(
-                  Icons.call,
-                  color: Color(0xff3B73F0),
-                  size: 18,
-                ),
-              ),
+              ],
             ],
           ),
-
           const SizedBox(height: 10),
-
-          // ---------- LOCATION ----------
           Row(
             children: [
               const Icon(Icons.location_on, size: 20, color: Colors.black54),
               const SizedBox(width: 6),
               Text(
-                "Mumbai",
+                vehicle.lastLocation,
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
               ),
             ],
           ),
-
-          // const SizedBox(height: 6),
-
-          // // ---------- KM + SERVICE ----------
-          // Text(
-          //   "KMs: 48,520 • Service: 15 days ago",
-          //   style: TextStyle(
-          //     fontSize: 12,
-          //     color: Colors.grey.shade600,
-          //   ),
-          // ),
           const SizedBox(height: 16),
-
-          // ---------- SUBSCRIPTION STATUS BOX ----------
+          // Subscription/Device Box
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -206,192 +246,65 @@ class VehiclesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "Subscription Status",
+                    const Text("Device Status", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    Text(
+                      vehicle.deviceInstalled ? "Installed" : "Not Installed",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: vehicle.id == "1"
-                            ? Colors.orange.shade50
-                            : const Color(0xffDFFBEA),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        vehicle.id == "1" ? "Expaired" : "Active",
-                        style: TextStyle(
-                          color: vehicle.id == "1"
-                              ? Colors.orange
-                              : Color(0xff2FA36A),
-                          fontSize: 12,
-                        ),
+                        color: vehicle.deviceInstalled ? Colors.green : Colors.orange,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    // Device Installed
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: Colors.black54,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                "Device Installed",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            "15 Jan 2024",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Next Renewal
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: Colors.black54,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                "Next Renewal",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            vehicle.id == "1" ? "15 May 2025" : "15 Jan 2026",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: vehicle.id == "1"
-                                  ? Colors.red
-                                  : Color(0xff1BA55A),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                if (vehicle.deviceInstalled && vehicle.deviceDetails != null) ...[
+                  const SizedBox(height: 10),
+                  Text("IMEI: ${vehicle.deviceDetails?.imeiNo ?? 'N/A'}", style: const TextStyle(fontSize: 12)),
+                  Text("Model: ${vehicle.deviceDetails?.deviceModel ?? 'N/A'}", style: const TextStyle(fontSize: 12)),
+                ]
               ],
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // ---------- ACTION BUTTONS ----------
           Row(
             children: [
-              vehicle.id == "1"
-                  ? Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          showRenewDialog(context);
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => TrackVehicleScreen( vehicle: vehicle,)));
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: const Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.payments_outlined, size: 18),
-                                SizedBox(width: 6),
-                                Text("Renuew Now"),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TrackVehicleScreen(vehicle: vehicle),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: const Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.navigation, size: 18),
-                                SizedBox(width: 6),
-                                Text("Track"),
-                              ],
-                            ),
-                          ),
-                        ),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TrackVehicleScreen(vehicle: vehicle)),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.navigation, size: 18),
+                          SizedBox(width: 6),
+                          Text("Track"),
+                        ],
                       ),
                     ),
+                  ),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddVehicleScreen(editingVehicle: vehicle),
-                      ),
+                      MaterialPageRoute(builder: (context) => AddVehicleScreen(editingVehicle: vehicle)),
                     );
                   },
                   child: Container(
@@ -419,51 +332,4 @@ class VehiclesScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-void showRenewDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Confirm Renewal"),
-        content: const Text("Are you sure you want to renew your vehicle?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // close dialog
-            },
-            child: const Text("No"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // close first dialog
-              showSuccessDialog(context); // show success message
-            },
-            child: const Text("Yes"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void showSuccessDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Success"),
-        content: const Text("Your vehicle renewed successfully!"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      );
-    },
-  );
 }

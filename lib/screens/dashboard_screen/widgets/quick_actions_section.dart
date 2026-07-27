@@ -13,40 +13,43 @@ class QuickActionsSection extends StatelessWidget {
       children: [
         Text('Quick Actions', style: AppTheme.headingSmall),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: ActionButton(
-                label: 'Live Tracking',
-                icon: Icons.location_on,
-                color: AppTheme.primaryBlue,
-                onTap: () {
-                  // Navigate to live tracking
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => MainScreen(currentIndex: 1),
-                    ),
-                  );
-                },
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ActionButton(
+                  label: 'Live Tracking',
+                  icon: Icons.location_on,
+                  color: AppTheme.primaryBlue,
+                  onTap: () {
+                    // Navigate to live tracking
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => MainScreen(currentIndex: 1),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ActionButton(
-                label: 'Reports',
-                icon: Icons.assessment,
-                color: AppTheme.accentPurple,
-                onTap: () {
-                  // Navigate to reports
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => MainScreen(currentIndex: 3),
-                    ),
-                  );
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: ActionButton(
+                  label: 'Reports',
+                  icon: Icons.assessment,
+                  color: AppTheme.accentPurple,
+                  onTap: () {
+                    // Navigate to reports
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => MainScreen(currentIndex: 3),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 12),
       ],

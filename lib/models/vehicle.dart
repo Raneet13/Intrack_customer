@@ -3,8 +3,8 @@ class Vehicle {
 
   // Basic Info
   final String name;
-  final String plateNumber;
-  final String type;                // Car, Truck, Van etc.
+  final String registrationNo;
+  final String type;
   final String make;
   final String model;
   final String year;
@@ -13,16 +13,17 @@ class Vehicle {
   final String driverId;
   final String driverName;
   final String driverPhone;
+  final String? driverLicense;
 
   // Location & Status
   final String status;
-  final String lastLocation;        // NEW: "Mumbai", "Bangalore"
+  final String lastLocation;
   final double? latitude;
   final double? longitude;
 
   // Metrics
-  final double mileage;             // NEW
-  final double fuelLevel;           // NEW (in %)
+  final double mileage;
+  final double fuelLevel;
   final double speed;
   final double todayKm;
   final double totalKm;
@@ -34,45 +35,80 @@ class Vehicle {
   final DateTime? subscriptionExpiry;
   final String? subscriptionPlan;
 
-  var vehicleType;
+  // Device Details
+  final bool deviceInstalled;
+  final DeviceDetails? deviceDetails;
 
   Vehicle({
     required this.id,
     required this.name,
-    required this.plateNumber,
-    required this.type,
-    required this.make,
-    required this.model,
-    required this.year,
-    required this.driverId,
-    required this.driverName,
-    required this.driverPhone,
+    String? registrationNo,
+    String? plateNumber, // Legacy support
+    String? registrationNumber, // Legacy support
+    String? type,
+    String? vehicleType, // Legacy support
+    this.make = '',
+    this.model = '',
+    this.year = '',
+    this.driverId = '',
+    String? driverName,
+    String? driver, // Legacy support
+    this.driverPhone = '',
+    this.driverLicense,
     required this.status,
-    required this.lastLocation,
+    this.lastLocation = 'Unknown',
     this.latitude,
     this.longitude,
-    required this.mileage,
-    required this.fuelLevel,
-    required this.speed,
-    required this.todayKm,
-    required this.totalKm,
-    required this.lastUpdate,
-    required this.subscriptionActive,
+    this.mileage = 0.0,
+    this.fuelLevel = 0.0,
+    this.speed = 0.0,
+    this.todayKm = 0.0,
+    this.totalKm = 0.0,
+    this.lastUpdate = '',
+    String? lastService, // Legacy support (ignored or mapped)
+    this.subscriptionActive = false,
     this.subscriptionExpiry,
-    this.subscriptionPlan, required String registrationNumber, required String vehicleType, required String driver, required String lastService,
-  });
+    this.subscriptionPlan,
+    this.deviceInstalled = false,
+    this.deviceDetails,
+  })  : this.registrationNo = registrationNo ?? registrationNumber ?? plateNumber ?? '',
+        this.type = type ?? vehicleType ?? '',
+        this.driverName = driverName ?? driver ?? '';
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('vehicle_id')) {
+      final driverJson = json['driver'];
+      final deviceDetailsJson = json['device_details'];
+
+      return Vehicle(
+        id: json['vehicle_id']?.toString() ?? '',
+        name: json['vehicle_name'] ?? '',
+        registrationNo: json['registration_no'] ?? '',
+        type: json['vehicle_type']?.toString() ?? '',
+        status: json['vehicle_status']?.toString() ?? '1',
+        driverId: driverJson?['driver_id']?.toString() ?? '',
+        driverName: driverJson?['driver_name'] ?? '',
+        driverPhone: driverJson?['phone'] ?? '',
+        driverLicense: driverJson?['license_no'],
+        deviceInstalled: json['device_installed'] ?? false,
+        deviceDetails: deviceDetailsJson != null
+            ? DeviceDetails.fromJson(deviceDetailsJson)
+            : null,
+        lastLocation: 'Unknown',
+        subscriptionActive: json['device_installed'] ?? false,
+      );
+    }
+
     return Vehicle(
-      id: json["id"],
+      id: json["id"]?.toString() ?? "",
       name: json["name"] ?? "",
-      plateNumber: json["plateNumber"] ?? json["registrationNumber"] ?? "",
+      registrationNo: json["registration_no"] ?? json["registrationNumber"] ?? json["plateNumber"] ?? "",
       type: json["type"] ?? json["vehicleType"] ?? "",
       make: json["make"] ?? "",
       model: json["model"] ?? "",
       year: json["year"]?.toString() ?? "",
       driverId: json["driverId"] ?? "",
-      driverName: json["driverName"] ?? "",
+      driverName: json["driverName"] ?? json["driver"] ?? "",
       driverPhone: json["driverPhone"] ?? "",
       status: json["status"] ?? "",
       lastLocation: json["lastLocation"] ?? "Unknown",
@@ -85,20 +121,22 @@ class Vehicle {
       totalKm: (json["totalKm"] ?? 0).toDouble(),
       lastUpdate: json["lastUpdate"] ?? "",
       subscriptionActive: json["subscriptionActive"] ?? false,
-      subscriptionExpiry: json["subscriptionExpiry"] != null
-          ? DateTime.parse(json["subscriptionExpiry"])
-          : null,
-      subscriptionPlan: json["subscriptionPlan"], registrationNumber: '', vehicleType: '', driver: '', lastService: '',
+      subscriptionExpiry: json["subscriptionExpiry"] != null ? DateTime.parse(json["subscriptionExpiry"]) : null,
+      subscriptionPlan: json["subscriptionPlan"],
     );
   }
 
-  get registrationNumber => null;
+  // Getters for compatibility
+  String get plateNumber => registrationNo;
+  String get registrationNumber => registrationNo;
+  String get vehicleType => type;
+  String get driver => driverName;
 
   Map<String, dynamic> toJson() {
     return {
       "id": id,
       "name": name,
-      "plateNumber": plateNumber,
+      "registrationNo": registrationNo,
       "type": type,
       "make": make,
       "model": model,
@@ -117,59 +155,72 @@ class Vehicle {
       "totalKm": totalKm,
       "lastUpdate": lastUpdate,
       "subscriptionActive": subscriptionActive,
-      "subscriptionExpiry": subscriptionExpiry?.toIso8601String(),
-      "subscriptionPlan": subscriptionPlan,
     };
   }
+}
 
-  Vehicle copyWith({
-    String? name,
-    String? plateNumber,
-    String? type,
-    String? make,
-    String? model,
-    String? year,
-    String? driverId,
-    String? driverName,
-    String? driverPhone,
-    String? status,
-    String? lastLocation,
-    double? latitude,
-    double? longitude,
-    double? mileage,
-    double? fuelLevel,
-    double? speed,
-    double? todayKm,
-    double? totalKm,
-    String? lastUpdate,
-    bool? subscriptionActive,
-    DateTime? subscriptionExpiry,
-    String? subscriptionPlan,
-  }) {
-    return Vehicle(
-      id: id,
-      name: name ?? this.name,
-      plateNumber: plateNumber ?? this.plateNumber,
-      type: type ?? this.type,
-      make: make ?? this.make,
-      model: model ?? this.model,
-      year: year ?? this.year,
-      driverId: driverId ?? this.driverId,
-      driverName: driverName ?? this.driverName,
-      driverPhone: driverPhone ?? this.driverPhone,
-      status: status ?? this.status,
-      lastLocation: lastLocation ?? this.lastLocation,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      mileage: mileage ?? this.mileage,
-      fuelLevel: fuelLevel ?? this.fuelLevel,
-      speed: speed ?? this.speed,
-      todayKm: todayKm ?? this.todayKm,
-      totalKm: totalKm ?? this.totalKm,
-      lastUpdate: lastUpdate ?? this.lastUpdate,
-      subscriptionActive: subscriptionActive ?? this.subscriptionActive,
-      subscriptionExpiry: subscriptionExpiry ?? this.subscriptionExpiry,
-      subscriptionPlan: subscriptionPlan ?? this.subscriptionPlan, registrationNumber: '', vehicleType: '', driver: '', lastService: '',
+class DeviceDetails {
+  final String? assignId;
+  final String? deviceId;
+  final String? deviceCode;
+  final String? imeiNo;
+  final String? deviceModel;
+  final String? serialNo;
+  final String? simNo;
+  final String? deviceStatus;
+  final List<InstallationImage> installationImages;
+
+  DeviceDetails({
+    this.assignId,
+    this.deviceId,
+    this.deviceCode,
+    this.imeiNo,
+    this.deviceModel,
+    this.serialNo,
+    this.simNo,
+    this.deviceStatus,
+    this.installationImages = const [],
+  });
+
+  factory DeviceDetails.fromJson(Map<String, dynamic> json) {
+    var imagesList = json['installation_images'] as List?;
+    List<InstallationImage> images = imagesList != null
+        ? imagesList.map((i) => InstallationImage.fromJson(i)).toList()
+        : [];
+
+    return DeviceDetails(
+      assignId: json['assign_id']?.toString(),
+      deviceId: json['device_id']?.toString(),
+      deviceCode: json['device_code'],
+      imeiNo: json['imei_no'],
+      deviceModel: json['device_model'],
+      serialNo: json['serial_no'],
+      simNo: json['sim_no'],
+      deviceStatus: json['device_status']?.toString(),
+      installationImages: images,
+    );
+  }
+}
+
+class InstallationImage {
+  final String id;
+  final String image;
+  final String description;
+  final String imageUrl;
+
+  InstallationImage({
+    required this.id,
+    required this.image,
+    required this.description,
+    required this.imageUrl,
+  });
+
+  factory InstallationImage.fromJson(Map<String, dynamic> json) {
+    return InstallationImage(
+      id: json['id']?.toString() ?? '',
+      image: json['image'] ?? '',
+      description: json['description'] ?? '',
+      imageUrl: json['image_url'] ?? '',
     );
   }
 }

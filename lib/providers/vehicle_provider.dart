@@ -1,96 +1,58 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import '../models/vehicle.dart';
 
 class VehicleProvider with ChangeNotifier {
   List<Vehicle> _vehicles = [];
-  
+  bool _isLoading = false;
+  String? _errorMessage;
+
   List<Vehicle> get vehicles => _vehicles;
-  
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
   int get totalVehicles => _vehicles.length;
-  int get activeVehicles => _vehicles.where((v) => v.status == 'active').length;
+  
+  // Updated to support both API status '1' and mock status 'active'
+  int get activeVehicles => _vehicles.where((v) => v.status == '1' || v.status == 'active').length;
+  int get inactiveVehicles => _vehicles.where((v) => v.status == '0' || v.status == 'inactive').length;
   int get idleVehicles => _vehicles.where((v) => v.status == 'idle').length;
-  int get inactiveVehicles => _vehicles.where((v) => v.status == 'inactive').length;
 
-  VehicleProvider() {
-    _loadMockData();
-  }
+  final String _baseUrl = 'https://ointern.com/demo/intrack/UserApi';
 
-  void _loadMockData() {
-    _vehicles = [
-      Vehicle(
-        id: '1',
-        registrationNumber: 'MH 12 AB 1234',
-        vehicleType: 'Truck',
-        model: 'Tata LPT 1613',
-        driverId: '1',
-        driverName: 'Rajesh Kumar',
-        status: 'active',
-        latitude: 19.0760,
-        longitude: 72.8777,
-        speed: 45.5,
-        todayKm: 156.8,
-        totalKm: 45620.5,
-        lastUpdate: '2 mins ago',
-        subscriptionActive: true,
-        subscriptionExpiry: DateTime.now().add(const Duration(days: 45)),
-        subscriptionPlan: 'Professional', name: '', plateNumber: '', make: '', year: '', driverPhone: '', type: '', lastLocation: '', mileage: 12.0, fuelLevel: 70, driver: '', lastService: '',
-      ),
-      Vehicle(
-        id: '2',
-        registrationNumber: 'DL 01 CD 5678',
-        vehicleType: 'Tempo',
-        model: 'Mahindra Bolero Pickup',
-        driverId: '2',
-        driverName: 'Amit Singh',
-        status: 'idle',
-        latitude: 28.7041,
-        longitude: 77.1025,
-        speed: 0,
-        todayKm: 89.2,
-        totalKm: 23450.0,
-        lastUpdate: '15 mins ago',
-        subscriptionActive: true,
-        subscriptionExpiry: DateTime.now().add(const Duration(days: 20)),
-        subscriptionPlan: 'Business', name: '', plateNumber: 'MH12AB1234', make: '21/09/2024', year: '2024', driverPhone: 'dibyajyoti', type: '', lastLocation: '', mileage: 12 , fuelLevel: 70, driver: '', lastService: '',
-      ),
-      Vehicle(
-        id: '3',
-        registrationNumber: 'KA 03 EF 9012',
-        vehicleType: 'Mini Truck',
-        model: 'Ashok Leyland Dost',
-        driverId: '3',
-        driverName: 'Suresh Patil',
-        status: 'inactive',
-        latitude: 12.9716,
-        longitude: 77.5946,
-        speed: 0,
-        todayKm: 0,
-        totalKm: 18900.0,
-        lastUpdate: '3 hours ago',
-        subscriptionActive: false,
-        subscriptionExpiry: DateTime.now().subtract(const Duration(days: 5)),
-        subscriptionPlan: 'Starter', name: '', plateNumber: '', make: '', year: '', driverPhone: '', type: '', lastLocation: '', mileage: 12, fuelLevel: 80, driver: '', lastService: '',
-      ),
-      Vehicle(
-        id: '4',
-        registrationNumber: 'GJ 01 GH 3456',
-        vehicleType: 'Truck',
-        model: 'Eicher Pro 2049',
-        driverId: '4',
-        driverName: 'Vijay Mehta',
-        status: 'active',
-        latitude: 23.0225,
-        longitude: 72.5714,
-        speed: 62.3,
-        todayKm: 234.5,
-        totalKm: 67890.0,
-        lastUpdate: 'Just now',
-        subscriptionActive: true,
-        subscriptionExpiry: DateTime.now().add(const Duration(days: 90)),
-        subscriptionPlan: 'Enterprise', name: '', plateNumber: '', make: '', year: '', driverPhone: '', type: '', lastLocation: '', mileage: 12, fuelLevel: 80, driver: '', lastService: '',
-      ),
-    ];
+  Future<void> fetchVehicles(String userId) async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    debugPrint('Vehicle API: Fetching for user_id: $userId');
+
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/vehicle_by_customer'),
+        body: {'user_id': userId},
+      );
+
+      debugPrint('Vehicle API Status: ${response.statusCode}');
+      debugPrint('Vehicle API Response Body: ${response.body}');
+
+      final data = json.decode(response.body);
+      if (data['status'] == true) {
+        final List<dynamic> vehicleList = data['data'];
+        _vehicles = vehicleList.map((json) => Vehicle.fromJson(json)).toList();
+        debugPrint('Vehicle API Success: Loaded ${_vehicles.length} vehicles');
+      } else {
+        _errorMessage = data['message'] ?? 'Failed to fetch vehicles';
+        debugPrint('Vehicle API Error Message: $_errorMessage');
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error: $e';
+      debugPrint('Vehicle API Exception: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Vehicle? getVehicleById(String id) {
@@ -129,11 +91,11 @@ class VehicleProvider with ChangeNotifier {
 
   List<Vehicle> searchVehicles(String query) {
     if (query.isEmpty) return _vehicles;
-    
+
     return _vehicles.where((vehicle) {
-      return vehicle.registrationNumber.toLowerCase().contains(query.toLowerCase()) ||
-             vehicle.driverName.toLowerCase().contains(query.toLowerCase()) ||
-             vehicle.vehicleType.toLowerCase().contains(query.toLowerCase());
+      return vehicle.registrationNo.toLowerCase().contains(query.toLowerCase()) ||
+          vehicle.driverName.toLowerCase().contains(query.toLowerCase()) ||
+          vehicle.type.toLowerCase().contains(query.toLowerCase());
     }).toList();
   }
 }

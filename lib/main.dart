@@ -7,6 +7,7 @@ import 'screens/main_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/vehicle_provider.dart';
 import 'providers/driver_provider.dart';
+import 'providers/dashboard_provider.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => VehicleProvider()),
         ChangeNotifierProvider(create: (_) => DriverProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
       ],
       child: MaterialApp(
         title: 'IN-Track',

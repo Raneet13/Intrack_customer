@@ -59,17 +59,17 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.sendOTP(_phoneController.text);
+    final result = await authProvider.sendOTP(_phoneController.text);
 
     setState(() {
       _isLoading = false;
-      if (success) {
+      if (result['success']) {
         _isOtpStep = true;
         Future.delayed(const Duration(milliseconds: 300), () {
           _otpFocusNodes[0].requestFocus();
         });
       } else {
-        _errorMessage = 'Failed to send OTP. Please try again.';
+        _errorMessage = result['message'];
       }
     });
   }
@@ -90,14 +90,14 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.verifyOTP(otp);
+    final result = await authProvider.verifyOTP(otp);
 
     if (!mounted) return;
 
     setState(() {
       _isLoading = false;
-      if (!success) {
-        _errorMessage = 'Invalid OTP. Please try again.';
+      if (!result['success']) {
+        _errorMessage = result['message'];
       }
     });
   }
@@ -105,12 +105,6 @@ class _LoginScreenState extends State<LoginScreen>
   void _handleOtpChange(int index, String value) {
     if (value.length == 1 && index < 5) {
       _otpFocusNodes[index + 1].requestFocus();
-    }
-  }
-
-  void _handleOtpBackspace(int index) {
-    if (_otpControllers[index].text.isEmpty && index > 0) {
-      _otpFocusNodes[index - 1].requestFocus();
     }
   }
 
@@ -211,11 +205,6 @@ class _LoginScreenState extends State<LoginScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                // gradient: const LinearGradient(
-                //   colors: [AppTheme.primaryBlue, AppTheme.primaryDark],
-                //   begin: Alignment.topLeft,
-                //   end: Alignment.bottomRight,
-                // ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -296,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen>
                 color: AppTheme.primaryBlue,
                 size: 20,
               ),
-            ),
+              ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -666,11 +655,21 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   _errorMessage = null;
+                  _isLoading = true;
                   for (var controller in _otpControllers) {
                     controller.clear();
+                  }
+                });
+                // Obtain authProvider from context
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final result = await authProvider.sendOTP(_phoneController.text);
+                setState(() {
+                  _isLoading = false;
+                  if (!result['success']) {
+                    _errorMessage = result['message'];
                   }
                 });
               },

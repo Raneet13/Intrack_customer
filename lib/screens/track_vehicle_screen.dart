@@ -520,7 +520,7 @@ class TrackVehicleScreen extends StatelessWidget {
                               child: _buildStatusItem(
                                 icon: Icons.local_gas_station,
                                 label: 'Fuel Level',
-                                value: '${vehicle.fuelLevel ?? 0}%',
+                                value: '${vehicle.fuelLevel}%',
                                 valueColor: _getFuelColor(
                                   vehicle.fuelLevel.toInt(),
                                 ),

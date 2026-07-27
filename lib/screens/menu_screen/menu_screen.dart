@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intrack_customer/screens/subscription_screen/subscription_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../subscription_screen/subscription_screen.dart';
+import '../help_screen/help_screen.dart';
+import '../notifications_screen/notifications_screen.dart';
+import '../privacy_screen.dart';
 import 'widgets/section_header.dart';
 import 'widgets/settings_tile.dart';
 
@@ -8,6 +13,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
       body: SafeArea(
@@ -23,8 +30,7 @@ class MenuScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-
-                    children: [
+                    children: const [
                       Text(
                         "Menu",
                         style: TextStyle(
@@ -44,17 +50,17 @@ class MenuScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // ------------------- COMPANY CARD -------------------
+                // ------------------- USER CARD -------------------
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
@@ -67,7 +73,7 @@ class MenuScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
-                          Icons.business,
+                          Icons.person,
                           color: Colors.blue,
                           size: 28,
                         ),
@@ -76,18 +82,18 @@ class MenuScreen extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              "Transport Solutions Pvt Ltd",
-                              style: TextStyle(
+                              authProvider.userName ?? "User",
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              "Business Plan • 10/25 vehicles",
-                              style: TextStyle(
+                              authProvider.userEmail ?? authProvider.phoneNumber ?? "",
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey,
                               ),
@@ -108,7 +114,7 @@ class MenuScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SubscriptionPage(),
+                        builder: (context) => const SubscriptionPage(),
                       ),
                     );
                   },
@@ -120,28 +126,71 @@ class MenuScreen extends StatelessWidget {
                   ),
                 ),
 
-                // const SizedBox(height: 18),
-
                 // ------------------- SUPPORT & SETTINGS -------------------
                 const SectionHeader("Support & Settings"),
 
-                SettingsTile(
-                  icon: Icons.notifications,
-                  iconColor: Colors.grey.shade800,
-                  title: "Notifications",
-                  subtitle: "Alert settings and history",
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                  child: SettingsTile(
+                    icon: Icons.notifications,
+                    iconColor: Colors.grey.shade800,
+                    title: "Notifications",
+                    subtitle: "Alert settings and history",
+                  ),
                 ),
-                SettingsTile(
-                  icon: Icons.help_outline,
-                  iconColor: Colors.grey.shade800,
-                  title: "Help & Support",
-                  subtitle: "FAQs and customer support",
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HelpScreen(),
+                      ),
+                    );
+                  },
+                  child: const SettingsTile(
+                    icon: Icons.help_outline,
+                    iconColor: Color(0xFF424242),
+                    title: "Help & Support",
+                    subtitle: "FAQs and customer support",
+                  ),
                 ),
-                SettingsTile(
-                  icon: Icons.lock_outline,
-                  iconColor: Colors.grey.shade800,
-                  title: "Privacy Policy",
-                  subtitle: "Data protection and privacy",
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PrivacyScreen(),
+                      ),
+                    );
+                  },
+                  child: const SettingsTile(
+                    icon: Icons.lock_outline,
+                    iconColor: Color(0xFF424242),
+                    title: "Privacy Policy",
+                    subtitle: "Data protection and privacy",
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                
+                // ------------------- LOGOUT -------------------
+                InkWell(
+                  onTap: () {
+                    _showLogoutDialog(context);
+                  },
+                  child: const SettingsTile(
+                    icon: Icons.logout,
+                    iconColor: Colors.redAccent,
+                    title: "Logout",
+                    subtitle: "Sign out of your account",
+                  ),
                 ),
 
                 const SizedBox(height: 30),
@@ -167,6 +216,34 @@ class MenuScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                context.read<AuthProvider>().logout();
+              },
+              child: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
